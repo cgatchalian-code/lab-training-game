@@ -3,1054 +3,284 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BTO - Prenatal Post Library Prep Training</title>
+<title>BTO — Lab Training</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 :root {
-  --bg:#0d1b2a; --bg2:#1b2f4a; --teal:#4ecdc4;
-  --blue:#2a7abf; --purple:#7b3fa0; --white:#ffffff; --gray:#8ab4d4;
-  --card:rgba(255,255,255,0.05); --cb:rgba(255,255,255,0.1);
-  --correct:#2ecc71; --wrong:#e74c3c; --warn:#f39c12;
+  --bg:#0d1b2a; --bg2:#1b2f4a; --teal:#4ecdc4; --blue:#2a7abf;
+  --purple:#7b3fa0; --white:#ffffff; --gray:#8ab4d4;
 }
-body { background:linear-gradient(135deg,var(--bg) 0%,var(--bg2) 100%); font-family:'Segoe UI',sans-serif; color:var(--white); min-height:100vh; overflow-x:hidden; }
-.screen { display:none; min-height:100vh; flex-direction:column; align-items:center; padding:24px 16px 40px; }
-.screen.active { display:flex; }
-
-/* TOP BAR */
-.topbar { width:100%; max-width:860px; display:flex; align-items:center; gap:10px; margin-bottom:24px; }
-.tl { color:var(--teal); font-size:.72rem; font-weight:700; letter-spacing:3px; text-transform:uppercase; }
-.tdot { width:7px; height:7px; background:var(--teal); border-radius:50%; flex-shrink:0; }
-.tr { margin-left:auto; display:flex; align-items:center; gap:12px; }
-.av-mini { width:34px; height:34px; border-radius:50%; border:2px solid var(--teal); overflow:hidden; background:var(--bg2); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.sc { background:rgba(78,205,196,.15); border:1px solid var(--teal); border-radius:20px; padding:4px 12px; font-size:.78rem; color:var(--teal); font-weight:700; white-space:nowrap; }
-
-/* BUTTONS */
-.btn { padding:12px 30px; border:none; border-radius:30px; font-size:.95rem; font-weight:700; cursor:pointer; transition:transform .15s,opacity .2s; letter-spacing:.4px; }
-.btn:hover { transform:scale(1.04); }
-.btn:disabled { opacity:.4; cursor:default; transform:none !important; }
-.btn-p { background:var(--teal); color:var(--bg); }
-.btn-s { background:transparent; border:2px solid var(--teal); color:var(--teal); }
-.btn-sm { padding:7px 18px; font-size:.8rem; border-radius:18px; border:2px solid var(--teal); background:transparent; color:var(--teal); cursor:pointer; font-weight:700; transition:transform .15s; }
-.btn-sm:hover { transform:scale(1.04); }
-h1 { font-size:1.9rem; font-weight:800; text-align:center; margin-bottom:8px; }
-.sub { color:var(--gray); font-size:.88rem; text-align:center; margin-bottom:30px; }
-
-/* CHARACTER SELECT */
-.chars { display:flex; gap:20px; flex-wrap:wrap; justify-content:center; margin-bottom:32px; }
-.cc { background:var(--card); border:2px solid var(--cb); border-radius:20px; padding:22px 16px 14px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; transition:transform .2s,border-color .2s,background .2s; width:165px; }
-.cc:hover { transform:translateY(-6px); border-color:var(--teal); background:rgba(78,205,196,.07); }
-.cc.sel { border-color:var(--teal); background:rgba(78,205,196,.11); transform:translateY(-6px); }
-.cn { font-size:.95rem; font-weight:700; letter-spacing:1px; }
-.cs { background:var(--teal); color:var(--bg); font-size:.62rem; font-weight:700; padding:2px 10px; border-radius:20px; opacity:0; transition:opacity .2s; }
-.cc.sel .cs { opacity:1; }
-
-/* ASSAY MAP */
-.ag { display:grid; grid-template-columns:repeat(auto-fill,minmax(175px,1fr)); gap:14px; width:100%; max-width:800px; margin-bottom:24px; }
-.at { border-radius:15px; padding:18px 14px; display:flex; flex-direction:column; align-items:center; gap:7px; cursor:pointer; transition:transform .18s,box-shadow .18s; border:2px solid transparent; position:relative; }
-.at:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(0,0,0,.3); }
-.at.locked { opacity:.4; cursor:not-allowed; }
-.at.locked:hover { transform:none; box-shadow:none; }
-.at.done { box-shadow:0 0 0 2px var(--correct); }
-.an { font-size:.95rem; font-weight:800; text-align:center; }
-.asub { font-size:.68rem; color:rgba(255,255,255,.7); text-align:center; }
-.abadge { font-size:.62rem; font-weight:700; padding:2px 9px; border-radius:9px; background:rgba(255,255,255,.14); }
-.li { position:absolute; top:9px; right:9px; font-size:.8rem; }
-.sr { display:flex; gap:2px; font-size:.88rem; }
-
-/* ═══════════════════════════════
-   ADVENTURE SCREEN
-═══════════════════════════════ */
-.aw { width:100%; max-width:800px; display:flex; flex-direction:column; gap:14px; }
-
-/* progress */
-.apw { width:100%; background:rgba(255,255,255,.07); border-radius:6px; height:5px; }
-.apf { height:5px; border-radius:6px; background:var(--teal); transition:width .5s; }
-.ameta { display:flex; justify-content:space-between; margin-top:4px; font-size:.72rem; color:var(--gray); font-weight:600; }
-
-/* lab scene */
-.ls { width:100%; height:215px; border-radius:18px; overflow:hidden; position:relative; background:#0a1a2a; }
-
-/* wall panel seams + chair rail + upper/lower wall per room */
-.r-postamp {
-  background:
-    repeating-linear-gradient(90deg,transparent 0,transparent 119px,rgba(0,0,0,.07) 119px,rgba(0,0,0,.07) 120px),
-    linear-gradient(180deg,transparent 47%,rgba(0,0,0,.28) 47%,rgba(0,0,0,.28) 51%,transparent 51%),
-    linear-gradient(180deg,#1e3818 0%,#1a3215 55%,#142a10 55%,#0e2008 100%);
-}
-.r-tc {
-  background:
-    repeating-linear-gradient(90deg,transparent 0,transparent 119px,rgba(0,0,0,.08) 119px,rgba(0,0,0,.08) 120px),
-    linear-gradient(180deg,transparent 47%,rgba(0,0,0,.3) 47%,rgba(0,0,0,.3) 51%,transparent 51%),
-    linear-gradient(180deg,#200e3c 0%,#1a0a32 55%,#140826 55%,#0e051e 100%);
-}
-.r-pool {
-  background:
-    repeating-linear-gradient(90deg,transparent 0,transparent 119px,rgba(0,0,0,.07) 119px,rgba(0,0,0,.07) 120px),
-    linear-gradient(180deg,transparent 47%,rgba(0,0,0,.28) 47%,rgba(0,0,0,.28) 51%,transparent 51%),
-    linear-gradient(180deg,#0e2038 0%,#0a1a30 55%,#081425 55%,#060f1c 100%);
+body {
+  background:linear-gradient(135deg,var(--bg) 0%,var(--bg2) 100%);
+  font-family:'Segoe UI',sans-serif; color:var(--white);
+  min-height:100vh; overflow-x:hidden;
 }
 
-/* ceiling panel */
-.ceiling {
-  position:absolute; top:0; left:0; right:0; height:26px;
-  border-bottom:2px solid rgba(0,0,0,.25);
-  display:flex; align-items:center; padding:5px 16% 5px 16%; gap:14%;
-  z-index:2; transition:background .5s;
+/* NAV */
+nav {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:20px 48px; border-bottom:1px solid rgba(255,255,255,.07);
+  position:sticky; top:0; background:rgba(13,27,42,.92);
+  backdrop-filter:blur(10px); z-index:100;
 }
-/* fluorescent light strips */
-.lstrip {
-  flex:1; height:11px; border-radius:3px;
-  background:linear-gradient(90deg,rgba(255,255,210,.45),rgba(255,255,225,.95),rgba(255,255,210,.45));
-  box-shadow:0 0 16px 5px rgba(255,255,200,.5), 0 8px 34px 5px rgba(255,255,200,.22);
+.nav-brand { display:flex; align-items:center; gap:10px; }
+.nav-dot { width:8px; height:8px; background:var(--teal); border-radius:50%; }
+.nav-title { font-size:.72rem; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--teal); }
+.nav-btn {
+  padding:9px 22px; border-radius:24px; background:var(--teal);
+  color:var(--bg); font-weight:800; font-size:.85rem; text-decoration:none;
+  transition:transform .15s,opacity .2s; letter-spacing:.3px;
+}
+.nav-btn:hover { transform:scale(1.04); opacity:.9; }
+
+/* HERO */
+.hero {
+  display:flex; flex-direction:column; align-items:center;
+  text-align:center; padding:90px 24px 80px;
+}
+.hero-badge {
+  display:inline-flex; align-items:center; gap:7px;
+  background:rgba(78,205,196,.1); border:1px solid rgba(78,205,196,.3);
+  border-radius:30px; padding:6px 16px; font-size:.72rem; font-weight:700;
+  letter-spacing:2px; text-transform:uppercase; color:var(--teal);
+  margin-bottom:28px;
+}
+.hero h1 {
+  font-size:3.2rem; font-weight:900; line-height:1.15;
+  max-width:720px; margin-bottom:18px;
+  background:linear-gradient(135deg,#fff 0%,var(--teal) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.hero p {
+  font-size:1.08rem; color:var(--gray); max-width:520px;
+  line-height:1.7; margin-bottom:38px;
+}
+.hero-actions { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
+.btn-primary {
+  padding:14px 36px; border-radius:32px; background:var(--teal);
+  color:var(--bg); font-weight:800; font-size:1rem; text-decoration:none;
+  transition:transform .15s,box-shadow .2s; letter-spacing:.3px;
+  box-shadow:0 0 28px rgba(78,205,196,.35);
+}
+.btn-primary:hover { transform:translateY(-3px); box-shadow:0 6px 36px rgba(78,205,196,.45); }
+.btn-ghost {
+  padding:14px 32px; border-radius:32px; border:2px solid rgba(255,255,255,.2);
+  color:rgba(255,255,255,.8); font-weight:700; font-size:.95rem;
+  text-decoration:none; transition:border-color .2s,color .2s;
+}
+.btn-ghost:hover { border-color:var(--teal); color:var(--teal); }
+
+/* STATS BAR */
+.stats {
+  display:flex; justify-content:center; gap:0;
+  border-top:1px solid rgba(255,255,255,.07);
+  border-bottom:1px solid rgba(255,255,255,.07);
+  flex-wrap:wrap;
+}
+.stat {
+  display:flex; flex-direction:column; align-items:center;
+  padding:28px 56px; border-right:1px solid rgba(255,255,255,.07);
+}
+.stat:last-child { border-right:none; }
+.stat-num { font-size:2rem; font-weight:900; color:var(--teal); }
+.stat-lbl { font-size:.72rem; color:var(--gray); letter-spacing:1.5px; text-transform:uppercase; margin-top:4px; }
+
+/* ASSAY CARDS */
+.section { padding:72px 48px; max-width:900px; margin:0 auto; }
+.section-label {
+  font-size:.7rem; font-weight:700; letter-spacing:3px;
+  text-transform:uppercase; color:var(--teal); margin-bottom:10px;
+}
+.section h2 { font-size:2rem; font-weight:800; margin-bottom:8px; }
+.section-sub { color:var(--gray); font-size:.92rem; margin-bottom:36px; line-height:1.6; }
+.assay-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:14px; }
+.assay-card {
+  border-radius:16px; padding:20px 18px; border:1px solid transparent;
+  display:flex; flex-direction:column; gap:7px; text-decoration:none;
+  transition:transform .18s,box-shadow .18s;
+}
+.assay-card:hover { transform:translateY(-4px); box-shadow:0 10px 28px rgba(0,0,0,.3); }
+.assay-card.locked { opacity:.4; cursor:default; pointer-events:none; }
+.ac-badge { font-size:.6rem; font-weight:700; padding:2px 9px; border-radius:8px; background:rgba(255,255,255,.1); color:rgba(255,255,255,.7); width:fit-content; }
+.ac-name { font-size:1rem; font-weight:800; }
+.ac-sub  { font-size:.7rem; color:rgba(255,255,255,.6); line-height:1.4; }
+.ac-status { font-size:.65rem; font-weight:700; margin-top:4px; }
+
+/* HOW IT WORKS */
+.steps { display:flex; gap:0; flex-wrap:wrap; }
+.step {
+  flex:1; min-width:180px; padding:28px 24px;
+  border-right:1px solid rgba(255,255,255,.07);
+}
+.step:last-child { border-right:none; }
+.step-num {
+  width:38px; height:38px; border-radius:50%;
+  background:rgba(78,205,196,.12); border:1px solid rgba(78,205,196,.35);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:900; font-size:.88rem; color:var(--teal); margin-bottom:14px;
+}
+.step h3 { font-size:.92rem; font-weight:800; margin-bottom:6px; }
+.step p  { font-size:.78rem; color:var(--gray); line-height:1.6; }
+
+/* CTA */
+.cta-section {
+  text-align:center; padding:80px 24px;
+  background:linear-gradient(180deg,transparent,rgba(78,205,196,.04),transparent);
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.cta-section h2 { font-size:2rem; font-weight:800; margin-bottom:12px; }
+.cta-section p  { color:var(--gray); font-size:.92rem; margin-bottom:32px; }
+
+/* FOOTER */
+footer {
+  padding:24px 48px; border-top:1px solid rgba(255,255,255,.07);
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+}
+.footer-brand { font-size:.72rem; color:var(--gray); letter-spacing:1px; }
+.footer-brand span { color:var(--teal); font-weight:700; }
+
+@media(max-width:640px){
+  nav { padding:16px 20px; }
+  .hero h1 { font-size:2.1rem; }
+  .section { padding:52px 20px; }
+  .stat { padding:22px 28px; }
+  footer { padding:20px; }
 }
 
-/* bench */
-.bench { position:absolute; bottom:0; left:0; right:0; height:62px; background:linear-gradient(180deg,#7a6a58,#5a4a38); border-top:3px solid #9a8a78; }
-.bench-shine { position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent); }
-
-/* room label */
-.rlbl { position:absolute; top:32px; left:14px; background:rgba(0,0,0,.55); backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,.18); border-radius:8px; padding:4px 11px; font-size:.68rem; font-weight:700; letter-spacing:2px; color:rgba(255,255,255,.85); text-transform:uppercase; }
-
-/* equipment */
-.equip { position:absolute; bottom:62px; right:0; display:flex; gap:10px; align-items:flex-end; padding-right:14px; }
-
-/* avatar */
-.walker { position:absolute; bottom:60px; left:60px; transition:left 1.2s ease-in-out; }
-@keyframes wbounce    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
-@keyframes wthink     { 0%,100%{transform:translateY(0) rotate(0deg)} 33%{transform:translateY(-3px) rotate(-1.5deg)} 66%{transform:translateY(-2px) rotate(1.5deg)} }
-@keyframes wcelebrate { 0%{transform:translateY(0) scale(1)} 25%{transform:translateY(-22px) scale(1.12) rotate(9deg)} 55%{transform:translateY(-26px) scale(1.06) rotate(-6deg)} 80%{transform:translateY(-10px) scale(1.02)} 100%{transform:translateY(0) scale(1)} }
-@keyframes wshake     { 0%,100%{transform:translateX(0) rotate(0)} 15%{transform:translateX(-11px) rotate(-6deg)} 30%{transform:translateX(11px) rotate(6deg)} 45%{transform:translateX(-8px) rotate(-4deg)} 60%{transform:translateX(8px) rotate(4deg)} 80%{transform:translateX(-4px) rotate(-2deg)} }
-.walker.walking   { animation:wbounce .38s ease-in-out infinite; }
-.walker.thinking  { animation:wthink 2.6s ease-in-out infinite; }
-.walker.correct   { animation:wcelebrate .75s ease-out forwards; }
-.walker.wrong     { animation:wshake .55s ease-in-out; }
-
-/* screen flash overlay */
-@keyframes lsflash { 0%{opacity:1} 100%{opacity:0} }
-.ls-flash { position:absolute; top:0;left:0;right:0;bottom:0; border-radius:18px; pointer-events:none; animation:lsflash .65s ease-out forwards; }
-.ls-flash.cor { background:rgba(46,204,113,.35); box-shadow:inset 0 0 0 3px rgba(46,204,113,.6); }
-.ls-flash.wrg { background:rgba(231,76,60,.35);  box-shadow:inset 0 0 0 3px rgba(231,76,60,.6); }
-
-/* floating score pop */
-@keyframes scoreup { 0%{opacity:1;transform:translateY(0) scale(1)} 40%{opacity:1;transform:translateY(-28px) scale(1.25)} 100%{opacity:0;transform:translateY(-60px) scale(.9)} }
-.score-pop { position:absolute; font-weight:900; font-size:1.15rem; color:#2ecc71; text-shadow:0 2px 8px rgba(0,0,0,.6); pointer-events:none; animation:scoreup .95s ease-out forwards; left:110px; bottom:105px; z-index:10; }
-
-/* speech bubble */
-.bubble { position:absolute; bottom:142px; left:16px; background:rgba(255,255,255,.96); color:#0d1b2a; border-radius:10px; padding:5px 10px; font-size:.7rem; font-weight:700; white-space:nowrap; opacity:0; transition:opacity .3s; pointer-events:none; max-width:200px; white-space:normal; }
-.bubble::after { content:''; position:absolute; bottom:-7px; left:18px; border:5px solid transparent; border-top-color:rgba(255,255,255,.96); }
-.bubble.show { opacity:1; }
-
-/* narrative — story panel */
-.narr {
-  background:rgba(0,0,0,.45);
-  border:1px solid rgba(255,255,255,.1);
-  border-left:3px solid var(--teal);
-  border-radius:0 14px 14px 0;
-  padding:16px 20px;
-  font-size:.94rem; line-height:1.75;
-  color:rgba(255,255,255,.93);
-  font-style:italic;
-}
-.narr strong { color:var(--teal); font-style:normal; }
-.narr em { color:rgba(255,255,255,.6); font-style:normal; font-size:.87em; }
-
-/* mission / shift badge */
-.mission-tag {
-  display:inline-flex; align-items:center; gap:6px;
-  background:rgba(78,205,196,.1); border:1px solid rgba(78,205,196,.4);
-  border-radius:7px; padding:3px 10px; font-size:.65rem; font-weight:800;
-  color:var(--teal); letter-spacing:1.5px; text-transform:uppercase;
-  margin-bottom:8px; font-style:normal;
-}
-
-/* YOUR CALL badge */
-.call-tag {
-  display:inline-flex; align-items:center; gap:6px;
-  background:rgba(150,80,240,.15); border:1px solid rgba(150,80,240,.5);
-  border-radius:7px; padding:4px 11px; font-size:.68rem; font-weight:800;
-  color:#c8a0ff; letter-spacing:1.5px; text-transform:uppercase;
-  margin-bottom:10px;
-}
-
-/* challenge box */
-.cbox {
-  background:rgba(0,0,0,.3);
-  border:1px solid rgba(255,255,255,.1);
-  border-top:2px solid rgba(150,80,240,.45);
-  border-radius:14px; padding:18px;
-}
-.cq { font-size:1.02rem; font-weight:800; margin-bottom:14px; line-height:1.5; }
-.opts { display:flex; flex-direction:column; gap:9px; }
-.opt {
-  background:rgba(255,255,255,.05); border:2px solid rgba(255,255,255,.11);
-  border-radius:11px; padding:11px 14px; cursor:pointer;
-  transition:border-color .14s,background .14s;
-  display:flex; align-items:flex-start; gap:11px; font-size:.88rem; line-height:1.45; text-align:left;
-}
-.opt:hover:not(.dis) { border-color:var(--teal); background:rgba(78,205,196,.07); }
-.opt.cor { border-color:var(--correct); background:rgba(46,204,113,.1); }
-.opt.wrg { border-color:var(--wrong); background:rgba(231,76,60,.09); }
-.opt.dis { cursor:default; }
-.ol { width:26px; height:26px; border-radius:50%; background:rgba(255,255,255,.1); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.77rem; flex-shrink:0; margin-top:1px; transition:background .14s; }
-.opt.cor .ol { background:var(--correct); color:#fff; }
-.opt.wrg .ol { background:var(--wrong); color:#fff; }
-
-/* feedback */
-.fb { border-radius:11px; padding:12px 15px; font-size:.85rem; line-height:1.55; margin-top:12px; display:none; }
-.fb.show { display:block; }
-.fb.cor { background:rgba(46,204,113,.09); border:1px solid rgba(46,204,113,.4); }
-.fb.wrg { background:rgba(231,76,60,.07); border:1px solid rgba(231,76,60,.35); }
-.fb strong { color:var(--teal); }
-
-/* nav */
-.anav { display:flex; justify-content:flex-end; }
-
-/* RESULTS */
-.rb { width:100%; max-width:580px; text-align:center; }
-.sci { width:130px; height:130px; border-radius:50%; border:4px solid var(--teal); display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0 auto 22px; background:rgba(78,205,196,.07); }
-.sn { font-size:2.1rem; font-weight:900; color:var(--teal); }
-.st { font-size:.78rem; color:var(--gray); }
-.mdl { font-size:3rem; margin-bottom:6px; }
-.sstar { font-size:1.5rem; margin-bottom:16px; }
-.rmsg { color:var(--gray); font-size:.92rem; margin-bottom:26px; line-height:1.55; }
-.ract { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
-
-/* RESPONSIVE */
-@media(max-width:580px){
-  h1{font-size:1.45rem;} .ls{height:170px;}
-  .chars{gap:12px;} .cc{width:130px;padding:16px 10px 12px;}
-  .ag{grid-template-columns:1fr 1fr;} .narr{font-size:.84rem;} .cq{font-size:.92rem;}
-}
-.fi{animation:fi .32s ease;}
-@keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-
-/* name input */
-.name-wrap { display:none; flex-direction:column; align-items:center; gap:7px; margin-bottom:26px; }
-.name-wrap.show { display:flex; animation:fi .3s ease; }
-.name-field {
-  background:rgba(255,255,255,.07); border:2px solid rgba(255,255,255,.15);
-  border-radius:14px; padding:12px 22px; color:#fff; font-size:1rem;
-  font-weight:600; text-align:center; width:270px; outline:none;
-  transition:border-color .2s; font-family:inherit;
-}
-.name-field:focus { border-color:var(--teal); background:rgba(78,205,196,.05); }
-.name-field::placeholder { color:rgba(255,255,255,.3); font-weight:400; }
-.name-hint { font-size:.74rem; color:var(--gray); letter-spacing:.5px; }
-
-/* scoreboard */
-.board-wrap { width:100%; max-width:640px; }
-.board-row {
-  display:flex; align-items:center; gap:13px;
-  background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.09);
-  border-radius:14px; padding:13px 18px; margin-bottom:10px;
-  transition:background .15s;
-}
-.board-row.me { border-color:var(--teal); background:rgba(78,205,196,.07); }
-.board-row.top1 { border-color:rgba(255,215,0,.5); background:rgba(255,215,0,.06); }
-.board-row.top2 { border-color:rgba(192,192,192,.4); }
-.board-row.top3 { border-color:rgba(205,127,50,.4); }
-.board-rank { width:38px; text-align:center; font-size:1.4rem; flex-shrink:0; }
-.board-info { flex:1; min-width:0; }
-.board-name { font-size:1rem; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.board-meta { font-size:.72rem; color:var(--gray); margin-top:2px; }
-.board-pts { font-size:1.35rem; font-weight:900; color:var(--teal); flex-shrink:0; }
-.board-empty { text-align:center; color:var(--gray); padding:48px 0; font-size:.92rem; line-height:1.7; }
+@keyframes fadeup { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+.hero > * { animation:fadeup .5s ease both; }
+.hero > *:nth-child(1){animation-delay:.05s}
+.hero > *:nth-child(2){animation-delay:.12s}
+.hero > *:nth-child(3){animation-delay:.2s}
+.hero > *:nth-child(4){animation-delay:.28s}
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════
-     SCREEN 1 — CHARACTER SELECT
-══════════════════════════════════ -->
-<div id="s-char" class="screen active">
-  <div class="topbar">
-    <div class="tdot"></div>
-    <div class="tl">BTO — Prenatal Post Library Prep Training</div>
-    <div class="tdot"></div>
+<nav>
+  <div class="nav-brand">
+    <div class="nav-dot"></div>
+    <div class="nav-title">BTO — Lab Training</div>
   </div>
-  <h1>Choose Your Lab Tech</h1>
-  <p class="sub">Pick who you'll be in the lab today</p>
-  <div class="chars">
-    <!-- JOHN -->
-    <div class="cc" onclick="selectChar(this,'John','john')">
-      <svg width="108" height="156" viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg">
-        <rect x="18" y="88" width="84" height="78" rx="10" fill="#2a7abf"/>
-        <polygon points="60,88 43,106 55,106" fill="#dceefb"/>
-        <polygon points="60,88 77,106 65,106" fill="#dceefb"/>
-        <rect x="53" y="106" width="14" height="60" rx="2" fill="#dceefb"/>
-        <rect x="73" y="112" width="24" height="18" rx="4" fill="#1a5f9e"/>
-        <rect x="78" y="109" width="3" height="12" rx="2" fill="#fff"/>
-        <rect x="84" y="109" width="3" height="12" rx="2" fill="#ffcc00"/>
-        <rect x="90" y="109" width="3" height="12" rx="2" fill="#ff6b6b"/>
-        <rect x="2" y="90" width="18" height="58" rx="9" fill="#2a7abf"/>
-        <rect x="100" y="90" width="18" height="58" rx="9" fill="#2a7abf"/>
-        <ellipse cx="11" cy="152" rx="9" ry="12" fill="#7b3fa0"/>
-        <ellipse cx="109" cy="152" rx="9" ry="12" fill="#7b3fa0"/>
-        <rect x="51" y="76" width="18" height="16" rx="5" fill="#f0c8a0"/>
-        <ellipse cx="60" cy="58" rx="27" ry="29" fill="#f0c8a0"/>
-        <ellipse cx="60" cy="34" rx="27" ry="13" fill="#4a3020"/>
-        <rect x="33" y="34" width="8" height="18" rx="4" fill="#4a3020"/>
-        <rect x="79" y="34" width="8" height="18" rx="4" fill="#4a3020"/>
-        <rect x="33" y="32" width="54" height="10" rx="3" fill="#4a3020"/>
-        <ellipse cx="49" cy="59" rx="5" ry="5" fill="#fff"/>
-        <ellipse cx="71" cy="59" rx="5" ry="5" fill="#fff"/>
-        <circle cx="50" cy="60" r="3" fill="#4a3020"/><circle cx="72" cy="60" r="3" fill="#4a3020"/>
-        <circle cx="51" cy="59" r="1.2" fill="#fff"/><circle cx="73" cy="59" r="1.2" fill="#fff"/>
-        <path d="M44 51 L54 51" stroke="#4a3020" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M66 51 L76 51" stroke="#4a3020" stroke-width="2.5" stroke-linecap="round"/>
-        <ellipse cx="60" cy="66" rx="3.5" ry="2.5" fill="#e0aa80"/>
-        <path d="M51 73 Q60 80 69 73" stroke="#c0785a" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <ellipse cx="33" cy="59" rx="4" ry="6" fill="#f0c8a0"/>
-        <ellipse cx="87" cy="59" rx="4" ry="6" fill="#f0c8a0"/>
-      </svg>
-      <div class="cn">John</div><div class="cs">SELECTED</div>
-    </div>
-    <!-- JANE -->
-    <div class="cc" onclick="selectChar(this,'Jane','jane')">
-      <svg width="108" height="156" viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg">
-        <rect x="18" y="88" width="84" height="78" rx="10" fill="#2a7abf"/>
-        <polygon points="60,88 43,106 55,106" fill="#dceefb"/>
-        <polygon points="60,88 77,106 65,106" fill="#dceefb"/>
-        <rect x="53" y="106" width="14" height="60" rx="2" fill="#dceefb"/>
-        <rect x="73" y="112" width="24" height="18" rx="4" fill="#1a5f9e"/>
-        <rect x="78" y="109" width="3" height="12" rx="2" fill="#fff"/>
-        <rect x="84" y="109" width="3" height="12" rx="2" fill="#4ecdc4"/>
-        <rect x="90" y="109" width="3" height="12" rx="2" fill="#ff9ff3"/>
-        <rect x="2" y="90" width="18" height="58" rx="9" fill="#2a7abf"/>
-        <rect x="100" y="90" width="18" height="58" rx="9" fill="#2a7abf"/>
-        <ellipse cx="11" cy="152" rx="9" ry="12" fill="#7b3fa0"/>
-        <ellipse cx="109" cy="152" rx="9" ry="12" fill="#7b3fa0"/>
-        <rect x="51" y="76" width="18" height="16" rx="5" fill="#8d5524"/>
-        <ellipse cx="60" cy="58" rx="27" ry="29" fill="#8d5524"/>
-        <ellipse cx="60" cy="30" rx="30" ry="20" fill="#1a0a00"/>
-        <ellipse cx="33" cy="52" rx="9" ry="16" fill="#1a0a00"/>
-        <ellipse cx="87" cy="52" rx="9" ry="16" fill="#1a0a00"/>
-        <circle cx="60" cy="14" r="6" fill="#ff6b6b"/>
-        <ellipse cx="49" cy="59" rx="5" ry="5" fill="#fff"/>
-        <ellipse cx="71" cy="59" rx="5" ry="5" fill="#fff"/>
-        <circle cx="50" cy="60" r="3" fill="#1a0a00"/><circle cx="72" cy="60" r="3" fill="#1a0a00"/>
-        <circle cx="51" cy="59" r="1.2" fill="#fff"/><circle cx="73" cy="59" r="1.2" fill="#fff"/>
-        <path d="M44 51 Q49 47 54 51" stroke="#1a0a00" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <path d="M66 51 Q71 47 76 51" stroke="#1a0a00" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <ellipse cx="60" cy="66" rx="3.5" ry="2.5" fill="#7a4820"/>
-        <path d="M51 73 Q60 80 69 73" stroke="#6b3515" stroke-width="2" fill="none" stroke-linecap="round"/>
-        <ellipse cx="33" cy="59" rx="4" ry="6" fill="#8d5524"/>
-        <ellipse cx="87" cy="59" rx="4" ry="6" fill="#8d5524"/>
-        <circle cx="33" cy="64" r="3" fill="#ffcc00"/><circle cx="87" cy="64" r="3" fill="#ffcc00"/>
-      </svg>
-      <div class="cn">Jane</div><div class="cs">SELECTED</div>
-    </div>
-    <!-- DEER -->
-    <div class="cc" onclick="selectChar(this,'Deer','deer')">
-      <svg width="108" height="156" viewBox="0 0 120 200" xmlns="http://www.w3.org/2000/svg">
-        <rect x="18" y="100" width="84" height="78" rx="10" fill="#2a7abf"/>
-        <polygon points="60,100 43,118 55,118" fill="#dceefb"/>
-        <polygon points="60,100 77,118 65,118" fill="#dceefb"/>
-        <rect x="53" y="118" width="14" height="60" rx="2" fill="#dceefb"/>
-        <rect x="73" y="124" width="24" height="18" rx="4" fill="#1a5f9e"/>
-        <rect x="78" y="121" width="3" height="12" rx="2" fill="#fff"/>
-        <rect x="84" y="121" width="3" height="12" rx="2" fill="#ffcc00"/>
-        <rect x="90" y="121" width="3" height="12" rx="2" fill="#4ecdc4"/>
-        <rect x="2" y="102" width="18" height="58" rx="9" fill="#2a7abf"/>
-        <rect x="100" y="102" width="18" height="58" rx="9" fill="#2a7abf"/>
-        <ellipse cx="11" cy="164" rx="9" ry="12" fill="#7b3fa0"/>
-        <ellipse cx="109" cy="164" rx="9" ry="12" fill="#7b3fa0"/>
-        <circle cx="35" cy="130" r="4" fill="#1a5f9e" opacity="0.5"/>
-        <circle cx="28" cy="145" r="3" fill="#1a5f9e" opacity="0.5"/>
-        <rect x="51" y="88" width="18" height="16" rx="5" fill="#c8843c"/>
-        <ellipse cx="60" cy="66" rx="28" ry="30" fill="#c8843c"/>
-        <ellipse cx="60" cy="80" rx="14" ry="10" fill="#e8b87a"/>
-        <rect x="26" y="18" width="6" height="28" rx="3" fill="#7a4a1a"/>
-        <rect x="16" y="10" width="5" height="18" rx="3" fill="#7a4a1a" transform="rotate(-15 16 10)"/>
-        <rect x="30" y="8" width="5" height="16" rx="3" fill="#7a4a1a" transform="rotate(10 30 8)"/>
-        <rect x="88" y="18" width="6" height="28" rx="3" fill="#7a4a1a"/>
-        <rect x="92" y="10" width="5" height="18" rx="3" fill="#7a4a1a" transform="rotate(15 97 10)"/>
-        <rect x="80" y="8" width="5" height="16" rx="3" fill="#7a4a1a" transform="rotate(-10 80 8)"/>
-        <ellipse cx="30" cy="44" rx="10" ry="16" fill="#c8843c" transform="rotate(-20 30 44)"/>
-        <ellipse cx="30" cy="44" rx="6" ry="11" fill="#e8a0a0" transform="rotate(-20 30 44)"/>
-        <ellipse cx="90" cy="44" rx="10" ry="16" fill="#c8843c" transform="rotate(20 90 44)"/>
-        <ellipse cx="90" cy="44" rx="6" ry="11" fill="#e8a0a0" transform="rotate(20 90 44)"/>
-        <ellipse cx="48" cy="64" rx="7" ry="8" fill="#fff"/>
-        <ellipse cx="72" cy="64" rx="7" ry="8" fill="#fff"/>
-        <circle cx="49" cy="65" r="5" fill="#3a1a00"/><circle cx="73" cy="65" r="5" fill="#3a1a00"/>
-        <circle cx="50" cy="63" r="2" fill="#fff"/><circle cx="74" cy="63" r="2" fill="#fff"/>
-        <ellipse cx="60" cy="77" rx="5" ry="4" fill="#e87090"/>
-        <circle cx="57" cy="78" r="1.5" fill="#c04060"/><circle cx="63" cy="78" r="1.5" fill="#c04060"/>
-        <path d="M52 84 Q60 90 68 84" stroke="#b06040" stroke-width="2" fill="none" stroke-linecap="round"/>
-      </svg>
-      <div class="cn">Deer</div><div class="cs">SELECTED</div>
-    </div>
+  <a href="game.html" class="nav-btn">Launch Game →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">🧬 CLS Training Platform</div>
+  <h1>Master the Prenatal<br>Post Library Prep Protocols</h1>
+  <p>An interactive training game for BTO lab staff. Walk through each assay, make real-time protocol decisions, and compete on the leaderboard.</p>
+  <div class="hero-actions">
+    <a href="game.html" class="btn-primary">▶ Start Training</a>
+    <a href="game.html#board" class="btn-ghost">🏆 View Leaderboard</a>
   </div>
-  <div class="name-wrap" id="name-wrap">
-    <div class="name-hint">What's your name?</div>
-    <input class="name-field" id="player-name" type="text" placeholder="Enter your name..." maxlength="22" oninput="validateStart()">
-  </div>
-  <button class="btn btn-p" id="startBtn" style="opacity:.4;pointer-events:none" onclick="goToMap()">START TRAINING →</button>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><div class="stat-num">4</div><div class="stat-lbl">Active Assays</div></div>
+  <div class="stat"><div class="stat-num">28</div><div class="stat-lbl">Decision Points</div></div>
+  <div class="stat"><div class="stat-num">3</div><div class="stat-lbl">Lab Rooms</div></div>
+  <div class="stat"><div class="stat-num">280</div><div class="stat-lbl">Max Score</div></div>
 </div>
 
-<!-- ══════════════════════════════════
-     SCREEN 2 — ASSAY MAP
-══════════════════════════════════ -->
-<div id="s-map" class="screen">
-  <div class="topbar">
-    <div class="tdot"></div>
-    <div class="tl">BTO — Prenatal Post Library Prep Training</div>
-    <div class="tdot"></div>
-    <div class="tr">
-      <button class="btn-sm" onclick="showScoreboard()">🏆 Leaderboard</button>
-      <div id="map-av" class="av-mini"></div>
-      <div class="sc" id="map-score">Score: 0</div>
+<!-- ASSAYS -->
+<section class="section">
+  <div class="section-label">Available Now</div>
+  <h2>Choose Your Assay</h2>
+  <p class="section-sub">Each adventure covers the full workflow from indexing through purification QC. Four assays available now — more coming soon.</p>
+  <div class="assay-grid">
+    <a href="game.html" class="assay-card" style="background:#1a6fbf22;border-color:#1a6fbf55;">
+      <div class="ac-badge">LAB-SOP-640</div>
+      <div class="ac-name">sgNIPT / sgV2</div>
+      <div class="ac-sub">CF, Sickle Cell, Thalassemia</div>
+      <div class="ac-status" style="color:#4ecdc4;">▶ Available</div>
+    </a>
+    <a href="game.html" class="assay-card" style="background:#d4a01722;border-color:#d4a01755;">
+      <div class="ac-badge">LAB-SOP-651</div>
+      <div class="ac-name">sgPLUS</div>
+      <div class="ac-sub">MCADD, Canavan, Tay-Sachs +4</div>
+      <div class="ac-status" style="color:#4ecdc4;">▶ Available</div>
+    </a>
+    <a href="game.html" class="assay-card" style="background:#2e8b5722;border-color:#2e8b5755;">
+      <div class="ac-badge">LAB-SOP-645</div>
+      <div class="ac-name">SMA</div>
+      <div class="ac-sub">Spinal Muscular Atrophy</div>
+      <div class="ac-status" style="color:#4ecdc4;">▶ Available</div>
+    </a>
+    <a href="game.html" class="assay-card" style="background:#6a4fa022;border-color:#6a4fa055;">
+      <div class="ac-badge">LAB-SOP-623</div>
+      <div class="ac-name">ANP / APA</div>
+      <div class="ac-sub">Aneuploidy + Paternal Allele</div>
+      <div class="ac-status" style="color:#4ecdc4;">▶ Available</div>
+    </a>
+    <div class="assay-card locked" style="background:#b0404022;border-color:#b0404055;">
+      <div class="ac-badge">LAB-SOP-653</div>
+      <div class="ac-name">ECP</div>
+      <div class="ac-sub">Expanded Carrier Panel</div>
+      <div class="ac-status" style="color:rgba(255,255,255,.35);">🔒 Coming Soon</div>
+    </div>
+    <div class="assay-card locked" style="background:#a0502022;border-color:#a0502055;">
+      <div class="ac-badge">LAB-SOP-653</div>
+      <div class="ac-name">CSP</div>
+      <div class="ac-sub">Carrier Screen Panel</div>
+      <div class="ac-status" style="color:rgba(255,255,255,.35);">🔒 Coming Soon</div>
+    </div>
+    <div class="assay-card locked" style="background:#2a709022;border-color:#2a709055;">
+      <div class="ac-badge">LAB-SOP-654</div>
+      <div class="ac-name">CCA</div>
+      <div class="ac-sub">CNV-Only Confirmation</div>
+      <div class="ac-status" style="color:rgba(255,255,255,.35);">🔒 Coming Soon</div>
+    </div>
+    <div class="assay-card locked" style="background:#5a607022;border-color:#5a607055;">
+      <div class="ac-badge">LAB-SOP-623</div>
+      <div class="ac-name">ANP+</div>
+      <div class="ac-sub">Aneuploidy Plus</div>
+      <div class="ac-status" style="color:rgba(255,255,255,.35);">🔒 Coming Soon</div>
     </div>
   </div>
-  <h1>Select an Assay</h1>
-  <p class="sub">Each adventure covers indexing through purification QC</p>
-  <div class="ag" id="assay-grid"></div>
-</div>
+</section>
 
-<!-- ══════════════════════════════════
-     SCREEN 3 — ADVENTURE
-══════════════════════════════════ -->
-<div id="s-adv" class="screen">
-  <div class="topbar">
-    <div class="tdot"></div>
-    <div class="tl">BTO — Prenatal Post Library Prep Training</div>
-    <div class="tdot"></div>
-    <div class="tr">
-      <button class="btn-sm" onclick="showScreen('s-map')">← Assays</button>
-      <div id="adv-av" class="av-mini"></div>
-      <div class="sc" id="adv-score">Score: 0</div>
+<!-- HOW IT WORKS -->
+<section class="section" style="padding-top:0;">
+  <div class="section-label">How It Works</div>
+  <h2>Your Shift, Your Decisions</h2>
+  <p class="section-sub">The game puts you in the lab and makes you earn every step.</p>
+  <div class="steps" style="border:1px solid rgba(255,255,255,.07);border-radius:16px;overflow:hidden;">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>Pick Your Character</h3>
+      <p>Choose John, Jane, or Deer and enter your name for the leaderboard.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>Walk the Lab</h3>
+      <p>Your avatar moves through the Post-Amp Lab, TC Room, and Pooling Station.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>Make the Call</h3>
+      <p>Real-time decision points — wrong moves cost points, right ones earn them.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <h3>Climb the Board</h3>
+      <p>Scores save automatically. See where you rank against the rest of the team.</p>
     </div>
   </div>
-  <div class="aw fi" id="adv-wrap">
-    <div>
-      <div class="apw"><div class="apf" id="apf"></div></div>
-      <div class="ameta">
-        <span id="adv-aname" style="color:var(--teal)"></span>
-        <span id="adv-step"></span>
-      </div>
-    </div>
-    <div id="ls" class="ls r-postamp">
-      <div id="r-ceiling" class="ceiling"><div class="lstrip"></div><div class="lstrip"></div></div>
-      <div id="r-equip" class="equip"></div>
-      <div class="bench"><div class="bench-shine"></div></div>
-      <div id="r-lbl" class="rlbl">POST-AMP LAB</div>
-      <div id="walker" class="walker"></div>
-      <div id="bubble" class="bubble"></div>
-    </div>
-    <div class="narr" id="narr"></div>
-    <div id="carea"></div>
-    <div class="anav">
-      <button class="btn btn-p" id="adv-cont" style="display:none" onclick="nextScene()">Continue →</button>
-    </div>
-  </div>
-</div>
+</section>
 
-<!-- ══════════════════════════════════
-     SCREEN 4 — RESULTS
-══════════════════════════════════ -->
-<div id="s-results" class="screen">
-  <div class="topbar">
-    <div class="tdot"></div>
-    <div class="tl">BTO — Prenatal Post Library Prep Training</div>
-    <div class="tdot"></div>
-  </div>
-  <div class="rb fi" id="results-content"></div>
-</div>
+<!-- CTA -->
+<section class="cta-section">
+  <h2>Ready to run the protocol?</h2>
+  <p>Pick an assay, walk the lab, and prove you know it cold.</p>
+  <a href="game.html" class="btn-primary">▶ Start Training</a>
+</section>
 
-<!-- ══════════════════════════════════
-     SCREEN 5 — LEADERBOARD
-══════════════════════════════════ -->
-<div id="s-board" class="screen">
-  <div class="topbar">
-    <div class="tdot"></div>
-    <div class="tl">BTO — Prenatal Post Library Prep Training</div>
-    <div class="tdot"></div>
-    <div class="tr">
-      <button class="btn-sm" onclick="showScreen('s-map')">← Back</button>
-    </div>
-  </div>
-  <div class="board-wrap fi">
-    <h1 style="margin-bottom:4px;">🏆 Leaderboard</h1>
-    <p class="sub" style="margin-bottom:22px;">Hall of fame — who knows the protocols cold?</p>
-    <div id="board-list"></div>
-    <div style="display:flex;gap:12px;justify-content:center;margin-top:24px;flex-wrap:wrap;">
-      <button class="btn btn-s" onclick="clearBoard()" style="font-size:.8rem;padding:9px 20px;">Clear All Scores</button>
-    </div>
-  </div>
-</div>
+<footer>
+  <div class="footer-brand"><span>BillionToOne</span> — Prenatal Post Library Prep Training</div>
+  <div class="footer-brand" style="font-size:.65rem;">Internal use only</div>
+</footer>
 
-<script>
-// ── STATE ──
-let S = { char:'', key:'', name:'', totalScore:0, completed:{}, assay:'', step:0, advScore:0, advTotal:0, answered:false, walkTimer:null };
-
-// ── AVATAR SVGs ──
-const MINI = {
-  john:`<svg viewBox="0 0 120 180" width="32" height="32"><rect x="18" y="88" width="84" height="78" rx="10" fill="#2a7abf"/><rect x="51" y="76" width="18" height="16" rx="5" fill="#f0c8a0"/><ellipse cx="60" cy="58" rx="27" ry="29" fill="#f0c8a0"/><ellipse cx="60" cy="34" rx="27" ry="13" fill="#4a3020"/><ellipse cx="49" cy="59" rx="5" ry="5" fill="#fff"/><ellipse cx="71" cy="59" rx="5" ry="5" fill="#fff"/><circle cx="50" cy="60" r="3" fill="#4a3020"/><circle cx="72" cy="60" r="3" fill="#4a3020"/><path d="M51 73 Q60 80 69 73" stroke="#c0785a" stroke-width="2" fill="none"/></svg>`,
-  jane:`<svg viewBox="0 0 120 180" width="32" height="32"><rect x="18" y="88" width="84" height="78" rx="10" fill="#2a7abf"/><rect x="51" y="76" width="18" height="16" rx="5" fill="#8d5524"/><ellipse cx="60" cy="58" rx="27" ry="29" fill="#8d5524"/><ellipse cx="60" cy="30" rx="30" ry="20" fill="#1a0a00"/><circle cx="60" cy="14" r="6" fill="#ff6b6b"/><ellipse cx="49" cy="59" rx="5" ry="5" fill="#fff"/><ellipse cx="71" cy="59" rx="5" ry="5" fill="#fff"/><circle cx="50" cy="60" r="3" fill="#1a0a00"/><circle cx="72" cy="60" r="3" fill="#1a0a00"/><path d="M51 73 Q60 80 69 73" stroke="#6b3515" stroke-width="2" fill="none"/></svg>`,
-  deer:`<svg viewBox="0 0 120 200" width="32" height="32"><rect x="18" y="100" width="84" height="78" rx="10" fill="#2a7abf"/><ellipse cx="60" cy="66" rx="28" ry="30" fill="#c8843c"/><ellipse cx="60" cy="80" rx="14" ry="10" fill="#e8b87a"/><ellipse cx="48" cy="64" rx="7" ry="8" fill="#fff"/><ellipse cx="72" cy="64" rx="7" ry="8" fill="#fff"/><circle cx="49" cy="65" r="5" fill="#3a1a00"/><circle cx="73" cy="65" r="5" fill="#3a1a00"/><ellipse cx="60" cy="77" rx="5" ry="4" fill="#e87090"/></svg>`
-};
-const FULL = {
-  john:`<svg viewBox="0 0 120 180" width="55" height="82"><rect x="18" y="88" width="84" height="78" rx="10" fill="#2a7abf"/><rect x="2" y="90" width="18" height="58" rx="9" fill="#2a7abf"/><rect x="100" y="90" width="18" height="58" rx="9" fill="#2a7abf"/><ellipse cx="11" cy="152" rx="9" ry="12" fill="#7b3fa0"/><ellipse cx="109" cy="152" rx="9" ry="12" fill="#7b3fa0"/><rect x="51" y="76" width="18" height="16" rx="5" fill="#f0c8a0"/><ellipse cx="60" cy="58" rx="27" ry="29" fill="#f0c8a0"/><ellipse cx="60" cy="34" rx="27" ry="13" fill="#4a3020"/><ellipse cx="49" cy="59" rx="5" ry="5" fill="#fff"/><ellipse cx="71" cy="59" rx="5" ry="5" fill="#fff"/><circle cx="50" cy="60" r="3" fill="#4a3020"/><circle cx="72" cy="60" r="3" fill="#4a3020"/><path d="M51 73 Q60 80 69 73" stroke="#c0785a" stroke-width="2" fill="none"/></svg>`,
-  jane:`<svg viewBox="0 0 120 180" width="55" height="82"><rect x="18" y="88" width="84" height="78" rx="10" fill="#2a7abf"/><rect x="2" y="90" width="18" height="58" rx="9" fill="#2a7abf"/><rect x="100" y="90" width="18" height="58" rx="9" fill="#2a7abf"/><ellipse cx="11" cy="152" rx="9" ry="12" fill="#7b3fa0"/><ellipse cx="109" cy="152" rx="9" ry="12" fill="#7b3fa0"/><rect x="51" y="76" width="18" height="16" rx="5" fill="#8d5524"/><ellipse cx="60" cy="58" rx="27" ry="29" fill="#8d5524"/><ellipse cx="60" cy="30" rx="30" ry="20" fill="#1a0a00"/><ellipse cx="33" cy="52" rx="9" ry="16" fill="#1a0a00"/><ellipse cx="87" cy="52" rx="9" ry="16" fill="#1a0a00"/><circle cx="60" cy="14" r="6" fill="#ff6b6b"/><ellipse cx="49" cy="59" rx="5" ry="5" fill="#fff"/><ellipse cx="71" cy="59" rx="5" ry="5" fill="#fff"/><circle cx="50" cy="60" r="3" fill="#1a0a00"/><circle cx="72" cy="60" r="3" fill="#1a0a00"/><path d="M51 73 Q60 80 69 73" stroke="#6b3515" stroke-width="2" fill="none"/></svg>`,
-  deer:`<svg viewBox="0 0 120 200" width="55" height="92"><rect x="18" y="100" width="84" height="78" rx="10" fill="#2a7abf"/><rect x="2" y="102" width="18" height="58" rx="9" fill="#2a7abf"/><rect x="100" y="102" width="18" height="58" rx="9" fill="#2a7abf"/><ellipse cx="11" cy="164" rx="9" ry="12" fill="#7b3fa0"/><ellipse cx="109" cy="164" rx="9" ry="12" fill="#7b3fa0"/><rect x="51" y="88" width="18" height="16" rx="5" fill="#c8843c"/><ellipse cx="60" cy="66" rx="28" ry="30" fill="#c8843c"/><ellipse cx="60" cy="80" rx="14" ry="10" fill="#e8b87a"/><rect x="26" y="18" width="6" height="28" rx="3" fill="#7a4a1a"/><ellipse cx="30" cy="44" rx="10" ry="16" fill="#c8843c" transform="rotate(-20 30 44)"/><ellipse cx="90" cy="44" rx="10" ry="16" fill="#c8843c" transform="rotate(20 90 44)"/><ellipse cx="48" cy="64" rx="7" ry="8" fill="#fff"/><ellipse cx="72" cy="64" rx="7" ry="8" fill="#fff"/><circle cx="49" cy="65" r="5" fill="#3a1a00"/><circle cx="73" cy="65" r="5" fill="#3a1a00"/><ellipse cx="60" cy="77" rx="5" ry="4" fill="#e87090"/></svg>`
-};
-
-// ── EQUIPMENT SVGs ──
-const EQUIP = {
-  postamp:`<svg width="92" height="72" viewBox="0 0 92 72">
-    <rect x="0" y="12" width="88" height="54" rx="5" fill="#1e3a6e"/>
-    <rect x="4" y="4" width="80" height="32" rx="4" fill="#142a54"/>
-    <rect x="8" y="7" width="72" height="22" rx="3" fill="#0a1a3a"/>
-    <rect x="10" y="9" width="68" height="18" rx="2" fill="#1a3a6a" opacity=".7"/>
-    <text x="44" y="21" fill="#4ecdc4" font-size="7" text-anchor="middle" font-weight="bold" font-family="monospace">AGILENT BRAVO</text>
-    <rect x="6" y="40" width="10" height="22" rx="2" fill="#1a3060"/>
-    <rect x="20" y="40" width="10" height="22" rx="2" fill="#2a7abf" opacity=".5"/>
-    <rect x="34" y="40" width="10" height="22" rx="2" fill="#2a7abf" opacity=".4"/>
-    <rect x="48" y="40" width="10" height="22" rx="2" fill="#2a7abf" opacity=".3"/>
-    <rect x="62" y="40" width="10" height="22" rx="2" fill="#1a3060"/>
-    <rect x="76" y="40" width="10" height="22" rx="2" fill="#4ecdc4" opacity=".3"/>
-  </svg>`,
-
-  tc:`<svg width="84" height="72" viewBox="0 0 84 72">
-    <rect x="0" y="28" width="84" height="42" rx="5" fill="#d8d8d8"/>
-    <path d="M2,28 L2,9 Q2,4 7,4 L77,4 Q82,4 82,9 L82,28 Z" fill="#1a6abf"/>
-    <path d="M5,25 L5,10 Q5,7 8,7 L76,7 Q79,7 79,10 L79,25 Z" fill="#2a7ad0"/>
-    <rect x="8" y="9" width="44" height="14" rx="2" fill="#0a1020"/>
-    <rect x="9" y="10" width="42" height="12" rx="2" fill="#0a1a30" opacity=".85"/>
-    <text x="56" y="20" fill="#4ecdc4" font-size="5" font-family="monospace" font-weight="bold">Veriti™</text>
-    <rect x="0" y="60" width="84" height="12" rx="4" fill="#1a1a1a"/>
-    <rect x="5" y="31" width="20" height="14" rx="2" fill="#b8b8b8"/>
-    <text x="42" y="50" fill="#555" font-size="4" text-anchor="middle" font-family="monospace">APPLIED BIOSYSTEMS</text>
-  </svg>`,
-
-  tc_biometra:`<svg width="84" height="72" viewBox="0 0 84 72">
-    <rect x="0" y="22" width="84" height="46" rx="5" fill="#c03020"/>
-    <path d="M2,22 L2,9 Q2,5 6,4 L78,4 Q82,5 82,9 L82,22 Z" fill="#a82010"/>
-    <rect x="0" y="20" width="84" height="5" fill="#e8e8e8"/>
-    <ellipse cx="42" cy="9" rx="10" ry="8" fill="#1a1a1a"/>
-    <ellipse cx="42" cy="9" rx="6.5" ry="5" fill="#2a2a2a"/>
-    <rect x="8" y="27" width="40" height="28" rx="3" fill="#1a0a0a"/>
-    <rect x="9" y="28" width="38" height="26" rx="2" fill="#120606" opacity=".9"/>
-    <text x="62" y="50" fill="#fff" font-size="4.5" text-anchor="middle" font-family="monospace">BIOMETRA</text>
-    <text x="62" y="57" fill="#ff8888" font-size="5" text-anchor="middle" font-weight="bold" font-family="monospace">TAdvanced</text>
-    <rect x="10" y="63" width="14" height="5" rx="2" fill="#901818"/>
-    <rect x="60" y="63" width="14" height="5" rx="2" fill="#901818"/>
-  </svg>`,
-
-  pool:`<svg width="155" height="110" viewBox="0 0 155 110">
-    <rect x="1" y="1" width="153" height="108" rx="6" fill="#1a0a3a" stroke="#5a3a8a" stroke-width="2"/>
-    <rect x="4" y="4" width="147" height="102" rx="4" fill="#140826" stroke="#3a2a6a" stroke-width="1"/>
-    <!-- Row A (y=23) cols: 19,41,63,85,107,129 -->
-    <ellipse cx="12" cy="19" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 12 19)"/>
-    <circle cx="19" cy="23" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="34" cy="19" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 34 19)"/>
-    <circle cx="41" cy="23" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="56" cy="19" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 56 19)"/>
-    <circle cx="63" cy="23" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="78" cy="19" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 78 19)"/>
-    <circle cx="85" cy="23" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="100" cy="19" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 100 19)"/>
-    <circle cx="107" cy="23" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="122" cy="19" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 122 19)"/>
-    <circle cx="129" cy="23" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <!-- Row B (y=46) -->
-    <ellipse cx="12" cy="42" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 12 42)"/>
-    <circle cx="19" cy="46" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="34" cy="42" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 34 42)"/>
-    <circle cx="41" cy="46" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="56" cy="42" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 56 42)"/>
-    <circle cx="63" cy="46" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="78" cy="42" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 78 42)"/>
-    <circle cx="85" cy="46" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="100" cy="42" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 100 42)"/>
-    <circle cx="107" cy="46" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="122" cy="42" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 122 42)"/>
-    <circle cx="129" cy="46" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <!-- Row C (y=69) -->
-    <ellipse cx="12" cy="65" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 12 65)"/>
-    <circle cx="19" cy="69" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="34" cy="65" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 34 65)"/>
-    <circle cx="41" cy="69" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="56" cy="65" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 56 65)"/>
-    <circle cx="63" cy="69" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="78" cy="65" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 78 65)"/>
-    <circle cx="85" cy="69" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="100" cy="65" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 100 65)"/>
-    <circle cx="107" cy="69" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="122" cy="65" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 122 65)"/>
-    <circle cx="129" cy="69" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <!-- Row D (y=92) -->
-    <ellipse cx="12" cy="88" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 12 88)"/>
-    <circle cx="19" cy="92" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="34" cy="88" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 34 88)"/>
-    <circle cx="41" cy="92" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="56" cy="88" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 56 88)"/>
-    <circle cx="63" cy="92" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="78" cy="88" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 78 88)"/>
-    <circle cx="85" cy="92" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="100" cy="88" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 100 88)"/>
-    <circle cx="107" cy="92" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <ellipse cx="122" cy="88" rx="2.5" ry="4.5" fill="#4a3a7a" transform="rotate(-20 122 88)"/>
-    <circle cx="129" cy="92" r="8" fill="none" stroke="#7060aa" stroke-width="1.5"/>
-    <!-- Labels -->
-    <text x="5" y="27"  fill="#6a5a9a" font-size="6" font-weight="bold" font-family="monospace">A</text>
-    <text x="5" y="50"  fill="#6a5a9a" font-size="6" font-weight="bold" font-family="monospace">B</text>
-    <text x="5" y="73"  fill="#6a5a9a" font-size="6" font-weight="bold" font-family="monospace">C</text>
-    <text x="5" y="96"  fill="#6a5a9a" font-size="6" font-weight="bold" font-family="monospace">D</text>
-    <text x="77" y="106" fill="#5a4a8a" font-size="5" text-anchor="middle" font-family="monospace">FORMULATRIX</text>
-  </svg>`
-};
-
-const ROOM_LABELS = { postamp:'POST-AMP LAB', tc:'TC ROOM', pool:'POOLING STATION' };
-
-// ── NAV ──
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-}
-function selectChar(card,name,key) {
-  document.querySelectorAll('.cc').forEach(c=>c.classList.remove('sel'));
-  card.classList.add('sel'); S.char=name; S.key=key;
-  document.getElementById('name-wrap').classList.add('show');
-  validateStart();
-}
-function validateStart() {
-  const v=document.getElementById('player-name').value.trim();
-  const b=document.getElementById('startBtn');
-  b.style.opacity=(S.char&&v)?'1':'.4';
-  b.style.pointerEvents=(S.char&&v)?'all':'none';
-}
-function goToMap() {
-  const nameVal=document.getElementById('player-name').value.trim();
-  if(!S.char||!nameVal) return;
-  S.name=nameVal;
-  document.querySelectorAll('.av-mini').forEach(el=>el.innerHTML=MINI[S.key]||'');
-  document.getElementById('map-score').textContent='Score: '+S.totalScore;
-  buildGrid(); showScreen('s-map');
-}
-
-// ── SCOREBOARD (localStorage) ──
-function saveScore() {
-  const board=JSON.parse(localStorage.getItem('bto_scores')||'[]');
-  const idx=board.findIndex(p=>p.name.toLowerCase()===S.name.toLowerCase());
-  const rec={ name:S.name, char:S.key, totalScore:S.totalScore, completed:Object.keys(S.completed).length };
-  if(idx>=0) board[idx]=rec; else board.push(rec);
-  board.sort((a,b)=>b.totalScore-a.totalScore);
-  localStorage.setItem('bto_scores',JSON.stringify(board));
-}
-function showScoreboard() {
-  const board=JSON.parse(localStorage.getItem('bto_scores')||'[]');
-  const medals=['🥇','🥈','🥉'];
-  const topClass=['top1','top2','top3'];
-  const list=document.getElementById('board-list');
-  if(!board.length){
-    list.innerHTML='<div class="board-empty">No scores yet.<br>Complete an assay to get on the board!</div>';
-  } else {
-    list.innerHTML=board.map((p,i)=>{
-      const isMe=S.name&&p.name.toLowerCase()===S.name.toLowerCase();
-      const rank=medals[i]||'#'+(i+1);
-      const cls=['board-row',topClass[i]||'',isMe?'me':''].filter(Boolean).join(' ');
-      return `<div class="${cls}">
-        <div class="board-rank">${rank}</div>
-        <div class="av-mini">${MINI[p.char]||''}</div>
-        <div class="board-info">
-          <div class="board-name">${p.name}${isMe?' <span style="color:var(--teal);font-size:.7rem;">YOU</span>':''}</div>
-          <div class="board-meta">${p.completed} assay${p.completed!==1?'s':''} completed</div>
-        </div>
-        <div class="board-pts">${p.totalScore} pts</div>
-      </div>`;
-    }).join('');
-  }
-  showScreen('s-board');
-}
-function clearBoard() {
-  if(confirm('Clear all scores from the leaderboard?')){
-    localStorage.removeItem('bto_scores');
-    showScoreboard();
-  }
-}
-
-// ── ASSAY DATA ──
-const ASSAYS = [
-  {id:'sgnipt', name:'sgNIPT / sgV2', sub:'CF, Sickle Cell, Thalassemia', color:'#1a6fbf', sop:'LAB-SOP-640', on:true},
-  {id:'sgplus', name:'sgPLUS',        sub:'MCADD, Canavan, Tay-Sachs +4', color:'#d4a017', sop:'LAB-SOP-651', on:true},
-  {id:'sma',    name:'SMA',           sub:'Spinal Muscular Atrophy',       color:'#2e8b57', sop:'LAB-SOP-645', on:true},
-  {id:'anp',    name:'ANP / APA',     sub:'Aneuploidy + Paternal Allele',  color:'#6a4fa0', sop:'LAB-SOP-623', on:true},
-  {id:'ecp',    name:'ECP',           sub:'Expanded Carrier Panel',        color:'#b04040', sop:'LAB-SOP-653', on:false},
-  {id:'csp',    name:'CSP',           sub:'Carrier Screen Panel',          color:'#a05020', sop:'LAB-SOP-653', on:false},
-  {id:'cca',    name:'CCA',           sub:'CNV-Only Confirmation Assay',   color:'#2a7090', sop:'LAB-SOP-654', on:false},
-  {id:'anpplus',name:'ANP+',          sub:'Aneuploidy Plus',               color:'#5a6070', sop:'LAB-SOP-623', on:false},
-];
-
-function buildGrid() {
-  const g=document.getElementById('assay-grid'); g.innerHTML='';
-  ASSAYS.forEach(a=>{
-    const done=S.completed[a.id];
-    const stars=done?Math.round((done.score/done.total)*3):0;
-    const starStr=done?('⭐'.repeat(stars)+'☆'.repeat(3-stars)):'☆☆☆';
-    const d=document.createElement('div');
-    d.className='at'+(a.on?'':' locked')+(done?' done':'');
-    d.style.background=a.color+'22';
-    d.style.borderColor=a.on?a.color+'88':'transparent';
-    d.innerHTML=`${!a.on?'<div class="li">🔒</div>':''}
-      <div class="abadge">${a.sop}</div>
-      <div class="an">${a.name}</div>
-      <div class="asub">${a.sub}</div>
-      <div class="sr">${starStr}</div>`;
-    if(a.on) d.onclick=()=>startAdventure(a.id);
-    g.appendChild(d);
-  });
-}
-
-// ── ADVENTURE DATA ──
-const ADV = {
-  sgnipt:{
-    title:'sgNIPT / sgV2', color:'#1a6fbf',
-    scenes:[
-      {type:'walk', room:'postamp', bubble:'Urgent run — gloves on',
-       text:'<div class="mission-tag">📋 SHIFT BEGINS</div>Your pager buzzes: <em>Urgent sgNIPT run — batch needed ASAP.</em> <strong>{name}</strong> pulls on gloves, grabs the protocol binder, and pushes through the Post-Amp Lab door. The room is quiet. The freezer hums. First stop: the plate cabinet.', dur:2600},
-      {type:'choice', room:'postamp',
-       narr:'You slide open the plate cabinet. Two distinct stacks sit side by side — one wrong grab and the run gets flagged before the first cycle. Which do you reach for?',
-       q:'Which index plates do you pull for sgNIPT?',
-       opts:['Full-Skirt PCR Plates','Semi-Skirt PCR Plates','96-Well Deep-Well Plates','LoBind Semi-Skirt Plates'],
-       ans:1, pts:10,
-       explain:'<strong>Semi-Skirt PCR Plates.</strong> Full-Skirt belongs to sgPLUS only. That swap restarts the entire batch — a mistake that costs the run.'},
-      {type:'choice', room:'postamp',
-       narr:'Two plates in hand. Pairing matters just as much as plate type — wrong pair means a sequencing failure, no exceptions. You scan both barcodes and cross-check. Which two go together?',
-       q:'Which index plate pair is valid for sgNIPT?',
-       opts:['Index M + Index O','Index M + Index N','Index N + Index P','Index Q + Index S'],
-       ans:1, pts:10,
-       explain:'sgNIPT pairs are fixed: <strong>M+N, O+P, Q+R, S+T.</strong> Both plates must come from the same pair. Mixing across sets is an immediate protocol violation.'},
-      {type:'choice', room:'tc',
-       narr:'Plates loaded on the Bravo, programs running. {name} walks down the hall to the TC bank. A row of Veriti thermocyclers lines the far wall. The run can\'t wait — how many do you start?',
-       q:'How many TCs do you start for sgNIPT indexing?',
-       opts:['One — single plate run','Two — simultaneously','Three','Two — back-to-back, not at the same time'],
-       ans:1, pts:10,
-       explain:'<strong>Two TCs, simultaneously.</strong> Program: <em>sgNIPTv2Indexing.</em> sgPLUS is the exception — it only runs one.'},
-      {type:'walk', room:'pool', bubble:'Controls pass — pool time',
-       text:'Qubit returns for <strong>F12 (PC), G12 (NC), H12 (NTC)</strong> — all within range. {name} marks the sheet and wheels the carrier to the Pooling Station. The Formulatrix rack sits open on the bench. Time to load.', dur:2400},
-      {type:'choice', room:'pool',
-       narr:'IDX_A and IDX_B are ready. They pool into PL tubes first, then go into the rack. You count the batch: one. How many tubes are you placing, and which slot?',
-       q:'One sgNIPT batch — what do you load into the Formulatrix?',
-       opts:['2 PL tubes → slots A1 and B1','1 PL tube (both plates combined) → slot A1','1 PL tube → slot B1 only','3 PL tubes → slots A1, B1, C1'],
-       ans:1, pts:10,
-       explain:'Both IDX plates pool into <strong>one PL tube → slot A1.</strong> Max one batch per pooling run. sgPLUS is different — 2 PL tubes, slots A1 and B1.'},
-      {type:'choice', room:'pool',
-       narr:'Bead purification next. The Bravo is waiting for a mixing plate. You open the supply drawer — same trap as the plate cabinet. One wrong grab and the batch fails here.',
-       q:'Which mixing plate do you load for sgNIPT bead purification?',
-       opts:['96-Well Full-Skirt PCR Plate','96-Well Semi-Skirt PCR Plate','96-Well 2.2 mL Deep-Well Plate','LoBind Plate'],
-       ans:1, pts:10,
-       explain:'<strong>Semi-Skirt PCR Plate</strong> for the mixing plate. sgPLUS is the only assay that uses Full-Skirt here — muscle memory will get you in trouble if you run both assays in the same week.'},
-      {type:'choice', room:'pool',
-       narr:'Purification complete. The PR plate slides into the Qubit reader. One number determines if this batch ships to sequencing or gets held. What are you looking for?',
-       q:'What\'s the minimum Qubit threshold and output volume for sgNIPT?',
-       opts:['≥ 5 ng/µL · 18 µL','≥ 10 ng/µL · 40 µL','≥ 13 ng/µL · 95 µL','≥ 10 ng/µL · 60 µL'],
-       ans:1, pts:10,
-       explain:'<strong>≥ 10 ng/µL, 40 µL output.</strong> For comparison — sgPLUS: ≥13 ng/µL · 95 µL (strictest). ANP: ≥5 ng/µL · 40 µL (most lenient). SMA: 18 µL (smallest volume).'},
-    ]
-  },
-
-  sgplus:{
-    title:'sgPLUS', color:'#d4a017',
-    scenes:[
-      {type:'walk', room:'postamp', bubble:'This one runs different — heads up',
-       text:'<div class="mission-tag">📋 SHIFT BEGINS</div>New orders: <strong>sgPLUS run.</strong> {name} pauses at the Post-Amp Lab door — this one runs differently from everything else on the floor. Driven by <strong>NiceGUI</strong>. Different plates, one thermal cycler. Know that before you touch anything.', dur:2500},
-      {type:'choice', room:'postamp',
-       narr:'Plate cabinet open. This is exactly where techs who are used to sgNIPT get burned. sgPLUS has one rule that no other assay on the floor follows. Which plates do you reach for?',
-       q:'Which index plates do you pull for sgPLUS?',
-       opts:['Semi-Skirt — same as sgNIPT, SMA, and ANP','Full-Skirt PCR Plates — unique to sgPLUS','96-Well Deep-Well Plates','Semi-Skirt, OM–OO series only'],
-       ans:1, pts:10,
-       explain:'<strong>Full-Skirt PCR Plates (OM–OO series).</strong> Every other assay uses Semi-Skirt. This Full-Skirt rule extends through the pooling step — it\'s sgPLUS all the way down.'},
-      {type:'choice', room:'tc', equip:'tc_biometra',
-       narr:'One IDX plate, one machine. {name} stops in front of the red Biometra TAdvanced. Unlike every other assay, sgPLUS only needs one. How many do you start?',
-       q:'How many TCs do you start for sgPLUS indexing?',
-       opts:['Two — simultaneously (like sgNIPT and SMA)','One TC — single plate only','Three','Two — run sequentially'],
-       ans:1, pts:10,
-       explain:'<strong>One TC only.</strong> Single plate per batch. Program: <em>sgPLUS IDX.</em> sgNIPT and SMA both fire two TCs simultaneously — sgPLUS does not.'},
-      {type:'walk', room:'pool', bubble:'2 PL tubes — slot A1 and B1',
-       text:'Indexing done. One IDX plate splits into <strong>2 PL tubes</strong> for this batch. {name} picks them both up and heads to the Pooling Station. The Formulatrix rack is open — time to place them.', dur:2200},
-      {type:'choice', room:'pool',
-       narr:'Both PL tubes in hand. The rack has four slots. You\'re running 1 batch. Where exactly do these go?',
-       q:'1 sgPLUS batch, 2 PL tubes — which Formulatrix slots do you load?',
-       opts:['A1 only (1 tube)','A1 and B1 (2 tubes)','C1 and D1','A1, B1, C1, D1 (all four)'],
-       ans:1, pts:10,
-       explain:'Batch 1 → <strong>slots A1 and B1</strong>, one tube per slot. Batch 2 (if running simultaneously) → C1 and D1. Max 2 batches per pooling run.'},
-      {type:'choice', room:'pool',
-       narr:'Protocol loaded: <em>"Run_Special_sgPLUS_Pooling."</em> Finger hovering over Run — but first, you need to confirm the pooling plate. One wrong plate type stops the run cold.',
-       q:'Which plate type does sgPLUS pooling require?',
-       opts:['96-Well Semi-Skirt PCR Plate (same as sgNIPT)','96-Well Full-Skirt PCR Plate — required for sgPLUS','96-Well 2.2 mL Deep-Well Plate','Any available 96-well plate'],
-       ans:1, pts:10,
-       explain:'<strong>Full-Skirt PCR Plate.</strong> The sgPLUS Full-Skirt rule extends from indexing all the way through pooling. Protocol: <em>"Run_Special_sgPLUS_Pooling"</em>. KAPA beads: 270 µL.'},
-      {type:'choice', room:'pool',
-       narr:'Purification complete. Qubit number coming up. sgPLUS has the strictest threshold in the lab — anything under it and the batch doesn\'t move. What are you looking for?',
-       q:'What\'s the minimum Qubit threshold and output volume for sgPLUS?',
-       opts:['≥ 10 ng/µL · 40 µL','≥ 13 ng/µL · 95 µL','≥ 5 ng/µL · 95 µL','≥ 13 ng/µL · 60 µL'],
-       ans:1, pts:10,
-       explain:'<strong>≥ 13 ng/µL (strictest), 95 µL output (largest of all assays).</strong> Sequencer: MGI DNBSEQ-T7. If you read 12.9 — it\'s a hold.'},
-    ]
-  },
-
-  sma:{
-    title:'SMA', color:'#2e8b57',
-    scenes:[
-      {type:'walk', room:'postamp', bubble:'SMA + SMAPA — always paired',
-       text:'<div class="mission-tag">📋 SHIFT BEGINS</div>SMA run today. <strong>{name}</strong> enters the Post-Amp Lab with one hard rule in mind: <strong>SMA_IDX and SMAPA_IDX always run as a pair</strong> — no exceptions. Two sub-assays. Two plates. The sequencer depends on telling them apart.', dur:2600},
-      {type:'choice', room:'postamp',
-       narr:'You pull both plates from the cabinet. SMA_IDX and SMAPA_IDX — they look almost identical on the label. But there\'s one critical difference between them. What is it?',
-       q:'What\'s the rule for SMA_IDX vs. SMAPA_IDX plate types?',
-       opts:['Both must be the same index type','They MUST be different index types from each other','Both must be Full-Skirt plates','SMAPA is Full-Skirt, SMA is Semi-Skirt'],
-       ans:1, pts:10,
-       explain:'SMA_IDX and SMAPA_IDX <strong>must be different index types.</strong> Same type = unresolvable data downstream. This is how the sequencer tells the two sub-assays apart.'},
-      {type:'choice', room:'postamp',
-       narr:'Before loading anything onto the Bravo, {name} stops. SMA\'s control well positions break the pattern every other assay follows. Getting this wrong is a critical error. Where do the controls go?',
-       q:'Where are the controls placed on the SMA Tailing plate?',
-       opts:['F12 (PC), G12 (NC), H12 (NTC) — same as sgNIPT','A1 (PC), B1 (NC), C1 (NTC) — unique to SMA','H1 (PC), H2 (NC), H3 (NTC)','E12 (PC), F12 (NC), G12 (NTC)'],
-       ans:1, pts:10,
-       explain:'<strong>A1 = PC, B1 = NC, C1 = NTC</strong> — on BOTH the SMA and SMAPA plates. Every other assay uses F12/G12/H12. Muscle memory from other assays will give you the wrong answer here.'},
-      {type:'choice', room:'tc',
-       narr:'Both plates loaded on separate Veriti thermocyclers. {name} reaches for the TC programs — each sub-assay runs its own. But how exactly?',
-       q:'What are the SMA indexing TC programs, and how are they run?',
-       opts:['sgNIPTv2Indexing + SMAIndexing — back-to-back','SMA Indexing + SMA Paternal Allele Indexing — simultaneously','SMA Tailing TC + SMAPA Tailing TC','SMA IDX (53 µL) + SMAPA IDX (30 µL)'],
-       ans:1, pts:10,
-       explain:'<strong>"SMA Indexing"</strong> and <strong>"SMA Paternal Allele Indexing"</strong>, run on separate TCs <strong>simultaneously.</strong> The Tailing TC programs ran earlier — don\'t confuse them with indexing.'},
-      {type:'walk', room:'pool', bubble:'Unique step coming — watch for it',
-       text:'Indexing done. Controls verified. {name} heads to the Pooling Station. <strong>SMA has one step that no other assay on the floor requires.</strong> Watch for it when the Bravo dialog opens.', dur:2400},
-      {type:'choice', room:'pool',
-       narr:'Bead purification starts. The Bravo dialog appears on screen — asking for an input you\'ve never seen on any other assay. What does it want?',
-       q:'What unique input does the SMA bead purification Bravo dialog require?',
-       opts:['Scan the index plate barcode twice','Enter the total sample count (including controls) per PL tube','Enter the KAPA bead lot number','Select column count from a dropdown'],
-       ans:1, pts:10,
-       explain:'SMA requires manually entering the <strong>total sample count including controls per PL tube</strong> in the Bravo purification dialog. No other assay does this. Slots: SMA PL → A1, SMAPA PL → B1.'},
-      {type:'choice', room:'pool',
-       narr:'Almost done. TE Buffer elution — but SMA\'s volume is not the same as sgNIPT\'s. A small number, easy to rush past. {name} double-checks before pipetting. How much?',
-       q:'How much TE Buffer does SMA use for bead elution?',
-       opts:['60 µL — same as sgNIPT','50 µL — sgNIPT uses 60 µL','80 µL — sgNIPT uses 60 µL','60 µL — sgNIPT uses 50 µL'],
-       ans:1, pts:10,
-       explain:'SMA: <strong>50 µL TE Buffer.</strong> sgNIPT uses 60 µL. This matches SMA\'s smallest final PR volume: <strong>18 µL.</strong> sgNIPT/ANP = 40 µL, sgPLUS = 95 µL.'},
-    ]
-  },
-
-  anp:{
-    title:'ANP / APA', color:'#6a4fa0',
-    scenes:[
-      {type:'walk', room:'postamp', bubble:'Two sub-assays — two volumes',
-       text:'<div class="mission-tag">📋 SHIFT BEGINS</div>ANP run. <strong>{name}</strong> enters the Post-Amp Lab. ANP and APA are indexed simultaneously using the <strong>"ANP60 and APA Indexing Combo"</strong> GUI — but each sub-assay has a different sample/Q5 split. Know both before you pipette anything.', dur:2600},
-      {type:'choice', room:'postamp',
-       narr:'ANP60 plate first. The Combo GUI is open. You need the right volume split — wrong numbers mean unbalanced libraries and a failed run. What goes in each ANP60 well?',
-       q:'For ANP60 indexing, how much sample and Q5 per well?',
-       opts:['5 µL sample + 10 µL Q5','2.5 µL sample + 12.5 µL Q5','12.5 µL sample + 2.5 µL Q5','10 µL sample + 15 µL Q5'],
-       ans:1, pts:10,
-       explain:'ANP60: <strong>2.5 µL sample + 12.5 µL Q5</strong> = 15 µL total per well. APA uses a different ratio — always confirm which plate you\'re setting up before touching the pipette.'},
-      {type:'choice', room:'postamp',
-       narr:'ANP60 loaded. Now APA. Same total volume per well — but the breakdown is different. {name} reads the label one more time before picking up the pipette. What goes in each APA well?',
-       q:'For APA indexing, how much sample and Q5 per well?',
-       opts:['2.5 µL sample + 12.5 µL Q5 (same as ANP60)','5 µL sample + 10 µL Q5','10 µL sample + 5 µL Q5','12.5 + 12.5 — equal parts'],
-       ans:1, pts:10,
-       explain:'APA: <strong>5 µL sample + 10 µL Q5</strong> = 15 µL total per well. ANP60 uses 2.5 µL + 12.5 µL. Both programs run simultaneously via the Combo GUI.'},
-      {type:'walk', room:'pool', bubble:'Up to 3 batches — rack is open',
-       text:'Indexing complete. {name} confirms NTC &lt; NC on both plates, then heads to the Pooling Station. ANP supports <strong>more simultaneous batches per run than any other assay</strong> — up to 3 at once.', dur:2400},
-      {type:'choice', room:'pool',
-       narr:'Three ANP batches ready for pooling — the maximum the protocol allows. You approach the Formulatrix rack. Which slots do you load?',
-       q:'For 3 ANP batches in one pooling run, which Formulatrix slots do you use?',
-       opts:['A1 only','A1 and B1','A1, B1, and C1','A1 through D1 (all four)'],
-       ans:2, pts:10,
-       explain:'ANP pools up to <strong>3 batches per run → slots A1, B1, and C1.</strong> Highest batch capacity of all four assays — sgNIPT: 1 max, sgPLUS: 2 max.'},
-      {type:'choice', room:'pool',
-       narr:'Purification done. Qubit loading. ANP\'s threshold is the most lenient of all four assays — but it still has to pass before the batch moves to sequencing. What\'s the number?',
-       q:'What\'s the ANP/APA minimum Qubit threshold and output volume?',
-       opts:['≥ 10 ng/µL · 40 µL','≥ 5 ng/µL · 40 µL','≥ 5 ng/µL · 18 µL','≥ 13 ng/µL · 40 µL'],
-       ans:1, pts:10,
-       explain:'ANP/APA: <strong>≥ 5 ng/µL (most lenient), 40 µL output.</strong> ANP reaction plates can also be shared with other ANP batches and ECS/ECS RA assays for ECP and CCA.'},
-    ]
-  }
-};
-
-// ── ADVENTURE FLOW ──
-function startAdventure(id) {
-  const adv=ADV[id]; if(!adv) return;
-  S.assay=id; S.step=0; S.advScore=0;
-  S.advTotal=adv.scenes.filter(sc=>sc.type==='choice').length*10;
-  document.getElementById('adv-av').innerHTML=MINI[S.key]||'';
-  document.getElementById('adv-aname').textContent=adv.title;
-  document.getElementById('adv-score').textContent='Score: '+S.totalScore;
-  showScreen('s-adv');
-  renderScene();
-}
-
-function renderScene() {
-  if(S.walkTimer){ clearTimeout(S.walkTimer); S.walkTimer=null; }
-  const adv=ADV[S.assay];
-  const sc=adv.scenes[S.step];
-  const total=adv.scenes.length;
-  const pct=(S.step/total*100).toFixed(0);
-  document.getElementById('apf').style.width=pct+'%';
-  document.getElementById('adv-step').textContent=`Step ${S.step+1} of ${total}`;
-  if(sc.type==='walk') renderWalk(sc);
-  else renderChoice(sc);
-}
-
-const CEILING_COLORS = {
-  postamp: ['#c8dab8','#b0c8a0'],
-  tc:      ['#c4b0e0','#a898cc'],
-  pool:    ['#a8c8e0','#90b4d0']
-};
-
-function setRoom(room, equipKey) {
-  const ls=document.getElementById('ls');
-  ls.className='ls r-'+room;
-  document.getElementById('r-lbl').textContent=ROOM_LABELS[room]||room.toUpperCase();
-  document.getElementById('r-equip').innerHTML=EQUIP[equipKey||room]||'';
-  const c=CEILING_COLORS[room]||CEILING_COLORS.postamp;
-  document.getElementById('r-ceiling').style.background=`linear-gradient(180deg,${c[0]},${c[1]})`;
-}
-
-function renderWalk(sc) {
-  setRoom(sc.room, sc.equip);
-  document.getElementById('narr').innerHTML=sc.text.replace(/{name}/g,S.char);
-  document.getElementById('carea').innerHTML='';
-  document.getElementById('adv-cont').style.display='none';
-
-  const walker=document.getElementById('walker');
-  walker.innerHTML=FULL[S.key]||'';
-  walker.style.transition='none';
-  walker.style.left='-90px';
-  walker.className='walker walking';
-
-  const bub=document.getElementById('bubble');
-  bub.textContent=sc.bubble||'';
-  bub.className='bubble';
-
-  setTimeout(()=>{
-    walker.style.transition='left 1.1s ease-in-out';
-    walker.style.left='55px';
-    setTimeout(()=>{ bub.classList.add('show'); }, 850);
-  },80);
-
-  S.walkTimer=setTimeout(()=>{
-    walker.className='walker';
-    bub.className='bubble';
-    S.step++; renderScene();
-  },sc.dur);
-}
-
-function renderChoice(sc) {
-  setRoom(sc.room, sc.equip);
-
-  const walker=document.getElementById('walker');
-  walker.innerHTML=FULL[S.key]||'';
-  walker.style.transition='none';
-  walker.style.left='55px';
-  walker.className='walker thinking';
-  document.getElementById('bubble').className='bubble';
-
-  document.getElementById('narr').innerHTML=sc.narr.replace(/{name}/g,S.char);
-
-  const letters=['A','B','C','D'];
-  const optsHTML=sc.opts.map((o,i)=>`
-    <div class="opt" id="opt${i}" onclick="pickOpt(${i})">
-      <div class="ol">${letters[i]}</div><div>${o}</div>
-    </div>`).join('');
-
-  document.getElementById('carea').innerHTML=`
-    <div class="cbox fi">
-      <div class="call-tag">⚔️ YOUR CALL</div>
-      <div class="cq">${sc.q}</div>
-      <div class="opts">${optsHTML}</div>
-      <div class="fb" id="fb"></div>
-    </div>`;
-
-  document.getElementById('adv-cont').style.display='none';
-  S.answered=false;
-}
-
-function pickOpt(idx) {
-  if(S.answered) return;
-  S.answered=true;
-  const sc=ADV[S.assay].scenes[S.step];
-  const ok=idx===sc.ans;
-
-  if(ok){ S.advScore+=sc.pts; S.totalScore+=sc.pts; }
-  document.getElementById('adv-score').textContent='Score: '+S.totalScore;
-  document.getElementById('map-score').textContent='Score: '+S.totalScore;
-
-  for(let i=0;i<sc.opts.length;i++){
-    const el=document.getElementById('opt'+i);
-    el.classList.add('dis');
-    if(i===sc.ans) el.classList.add('cor');
-    else if(i===idx) el.classList.add('wrg');
-  }
-
-  const fb=document.getElementById('fb');
-  fb.className='fb show '+(ok?'cor':'wrg');
-  fb.innerHTML=`<strong>${ok?'✓ Good call —':'✗ Wrong move —'}</strong> ${sc.explain}`;
-
-  // Avatar reaction
-  const walker=document.getElementById('walker');
-  walker.className='walker '+(ok?'correct':'wrong');
-  setTimeout(()=>{ walker.className='walker'; }, 800);
-
-  // Speech bubble reaction
-  const bub=document.getElementById('bubble');
-  bub.textContent=ok?'✓ Let\'s go!':'✗ Not this time...';
-  bub.className='bubble show';
-  setTimeout(()=>{ bub.className='bubble'; },1600);
-
-  // Lab scene flash
-  const ls=document.getElementById('ls');
-  const flashEl=document.createElement('div');
-  flashEl.className='ls-flash '+(ok?'cor':'wrg');
-  ls.appendChild(flashEl);
-  setTimeout(()=>{ flashEl.remove(); },700);
-
-  // Floating +pts on correct
-  if(ok){
-    const pop=document.createElement('div');
-    pop.className='score-pop';
-    pop.textContent='+'+sc.pts;
-    ls.appendChild(pop);
-    setTimeout(()=>{ pop.remove(); },980);
-  }
-
-  document.getElementById('adv-cont').style.display='block';
-}
-
-function nextScene() {
-  const adv=ADV[S.assay];
-  S.step++;
-  if(S.step>=adv.scenes.length) showResults();
-  else renderScene();
-}
-
-// ── RESULTS ──
-function showResults() {
-  const adv=ADV[S.assay];
-  const sc=S.advScore, tot=S.advTotal;
-  const pct=tot>0?Math.round(sc/tot*100):0;
-  S.completed[S.assay]={score:sc,total:tot};
-  saveScore();
-  buildGrid();
-
-  let mdl='🥉', msg='Keep practicing — review the explanations.';
-  if(pct>=90){mdl='🏆';msg='Outstanding! Protocol mastered.';}
-  else if(pct>=70){mdl='🥇';msg='Great work! A few points to revisit.';}
-  else if(pct>=50){mdl='🥈';msg='Good effort. Focus on the highlighted differences.';}
-
-  const stars=pct>=90?'⭐⭐⭐':pct>=60?'⭐⭐☆':'⭐☆☆';
-
-  document.getElementById('results-content').innerHTML=`
-    <div class="mdl">${mdl}</div>
-    <div class="sci"><div class="sn">${sc}</div><div class="st">/ ${tot} pts</div></div>
-    <div class="sstar">${stars}</div>
-    <div style="font-size:1.25rem;font-weight:800;margin-bottom:6px;">${adv.title}</div>
-    <div class="rmsg">${msg}</div>
-    <div class="ract">
-      <button class="btn btn-s" onclick="startAdventure('${S.assay}')">Try Again</button>
-      <button class="btn btn-s" onclick="showScoreboard()">🏆 Leaderboard</button>
-      <button class="btn btn-p" onclick="showScreen('s-map')">Next Assay →</button>
-    </div>`;
-  showScreen('s-results');
-}
-</script>
 </body>
 </html>
