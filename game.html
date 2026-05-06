@@ -648,43 +648,61 @@ function goToMap() {
   buildGrid(); showScreen('s-map');
 }
 
-// ── SCOREBOARD (localStorage) ──
-function saveScore() {
-  const board=JSON.parse(localStorage.getItem('bto_scores')||'[]');
-  const idx=board.findIndex(p=>p.name.toLowerCase()===S.name.toLowerCase());
+// ── SCOREBOARD (Firebase Realtime Database) ──
+const FB_URL='https://post-2da97-default-rtdb.firebaseio.com/scores';
+
+async function saveScore() {
   const rec={ name:S.name, char:S.key, totalScore:S.totalScore, completed:Object.keys(S.completed).length };
-  if(idx>=0) board[idx]=rec; else board.push(rec);
-  board.sort((a,b)=>b.totalScore-a.totalScore);
-  localStorage.setItem('bto_scores',JSON.stringify(board));
+  try {
+    // Read existing scores
+    const res=await fetch(FB_URL+'.json');
+    const data=await res.json()||{};
+    // Find existing entry by name (case-insensitive)
+    const key=Object.keys(data).find(k=>data[k].name.toLowerCase()===S.name.toLowerCase());
+    if(key) {
+      await fetch(`${FB_URL}/${key}.json`,{method:'PUT',body:JSON.stringify(rec)});
+    } else {
+      await fetch(FB_URL+'.json',{method:'POST',body:JSON.stringify(rec)});
+    }
+  } catch(e){ console.warn('Score save failed',e); }
 }
-function showScoreboard() {
-  const board=JSON.parse(localStorage.getItem('bto_scores')||'[]');
-  const medals=['🥇','🥈','🥉'];
-  const topClass=['top1','top2','top3'];
-  const list=document.getElementById('board-list');
-  if(!board.length){
-    list.innerHTML='<div class="board-empty">No scores yet.<br>Complete an assay to get on the board!</div>';
-  } else {
-    list.innerHTML=board.map((p,i)=>{
-      const isMe=S.name&&p.name.toLowerCase()===S.name.toLowerCase();
-      const rank=medals[i]||'#'+(i+1);
-      const cls=['board-row',topClass[i]||'',isMe?'me':''].filter(Boolean).join(' ');
-      return `<div class="${cls}">
-        <div class="board-rank">${rank}</div>
-        <div class="av-mini">${MINI[p.char]||''}</div>
-        <div class="board-info">
-          <div class="board-name">${p.name}${isMe?' <span style="color:var(--teal);font-size:.7rem;">YOU</span>':''}</div>
-          <div class="board-meta">${p.completed} assay${p.completed!==1?'s':''} completed</div>
-        </div>
-        <div class="board-pts">${p.totalScore} pts</div>
-      </div>`;
-    }).join('');
-  }
+
+async function showScoreboard() {
   showScreen('s-board');
+  const list=document.getElementById('board-list');
+  list.innerHTML='<div class="board-empty">Loading scores...</div>';
+  try {
+    const res=await fetch(FB_URL+'.json');
+    const data=await res.json();
+    const board=data?Object.values(data).sort((a,b)=>b.totalScore-a.totalScore):[];
+    const medals=['🥇','🥈','🥉'];
+    const topClass=['top1','top2','top3'];
+    if(!board.length){
+      list.innerHTML='<div class="board-empty">No scores yet.<br>Complete an assay to get on the board!</div>';
+    } else {
+      list.innerHTML=board.map((p,i)=>{
+        const isMe=S.name&&p.name.toLowerCase()===S.name.toLowerCase();
+        const rank=medals[i]||'#'+(i+1);
+        const cls=['board-row',topClass[i]||'',isMe?'me':''].filter(Boolean).join(' ');
+        return `<div class="${cls}">
+          <div class="board-rank">${rank}</div>
+          <div class="av-mini">${MINI[p.char]||''}</div>
+          <div class="board-info">
+            <div class="board-name">${p.name}${isMe?' <span style="color:var(--teal);font-size:.7rem;">YOU</span>':''}</div>
+            <div class="board-meta">${p.completed} assay${p.completed!==1?'s':''} completed</div>
+          </div>
+          <div class="board-pts">${p.totalScore} pts</div>
+        </div>`;
+      }).join('');
+    }
+  } catch(e){
+    list.innerHTML='<div class="board-empty">Could not load scores. Check your connection.</div>';
+  }
 }
-function clearBoard() {
-  if(confirm('Clear all scores from the leaderboard?')){
-    localStorage.removeItem('bto_scores');
+
+async function clearBoard() {
+  if(confirm('Clear ALL scores from the leaderboard?')){
+    await fetch(FB_URL+'.json',{method:'DELETE'});
     showScoreboard();
   }
 }
