@@ -1087,6 +1087,8 @@ function showResults() {
     </div>`;
   showScreen('s-results');
 }
+// Jump straight to leaderboard if URL has #board
+if(window.location.hash==='#board') showScoreboard();
 </script>
 </body>
 </html>
