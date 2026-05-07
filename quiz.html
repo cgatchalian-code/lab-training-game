@@ -208,7 +208,7 @@ body {
 const QUESTIONS = [
   {
     scene: "⏰",
-    q: "It's 6 AM. Your shift just started. First move?",
+    q: "Your shift just started.",
     opts: [
       { icon:"📋", text:"Check the run list — know exactly what's happening today.", a:"A" },
       { icon:"🔍", text:"Scan the whole lab — get ahead of anything before it starts.", a:"B" },
@@ -230,10 +230,10 @@ const QUESTIONS = [
     scene: "🔬",
     q: "Your lab bench on a normal day looks like:",
     opts: [
-      { icon:"📦", text:"Organized. Everything in its usual, reliable spot.", a:"A" },
-      { icon:"🗂️", text:"Organized, plus a backup kit and extras just in case.", a:"B" },
-      { icon:"⬜", text:"Minimalist. Only exactly what I need for this step.", a:"C" },
-      { icon:"🗺️", text:"Layered — I work in stages and need room for all of them.", a:"D" }
+      { icon:"🧼", text:"Reagents in order of use, tips pre-loaded, bench wiped. Ready to go.", a:"A" },
+      { icon:"🧰", text:"Everything set up, plus a backup set of reagents and an extra control, just in case.", a:"B" },
+      { icon:"🎯", text:"Exactly what this protocol needs — nothing more, nothing less.", a:"C" },
+      { icon:"🗂️", text:"Multiple steps staged at once — I think ahead and set up before I need it.", a:"D" }
     ]
   },
   {
@@ -243,7 +243,7 @@ const QUESTIONS = [
       { icon:"▶️", text:"Read it once and start — I learn best by doing.", a:"A" },
       { icon:"📚", text:"Read it, then look up everything adjacent to it too.", a:"B" },
       { icon:"🖊️", text:"Read it three times and highlight every critical step.", a:"C" },
-      { icon:"🕸️", text:"Map out how each step connects before touching a pipette.", a:"D" }
+      { icon:"🙋", text:"Read it, create a note, but still ask someone else.", a:"D" }
     ]
   },
   {
@@ -311,11 +311,11 @@ const RESULTS = {
     traits:["Pinpoint accuracy","Methodical","Never cuts corners","Detail-obsessed","Calm and focused"]
   },
   D: {
-    sop:"LAB-SOP-623", archetype:"The Big Picture Thinker", name:"ANP / APA",
-    tag:"You handle complexity others avoid.",
-    scene:"🐙", color:"#b07aff", border:"rgba(176,122,255,.5)", bg:"rgba(176,122,255,.07)",
-    desc:"You see connections others don't. Before anyone picks up a pipette, you've already mapped three possible outcomes and what each means downstream. Like ANP/APA, you operate in layers — and that complexity is your strength, not a complication. You thrive when the problem is hard enough to be interesting.",
-    traits:["Systems thinker","Connects the dots","Multi-step planner","Loves complexity","Strategic mind"]
+    sop:"LAB-SOP-623", archetype:"The Crowd Favorite", name:"ANP / APA",
+    tag:"Everyone knows you. You just make it look easy.",
+    scene:"⭐", color:"#b07aff", border:"rgba(176,122,255,.5)", bg:"rgba(176,122,255,.07)",
+    desc:"ANP/APA is the most-run assay in the lab — and you're the most relied-on person on the team. You're approachable, well-rounded, and the first person someone calls when they need a hand. Everyone's been trained on ANP/APA, but you're the one who actually makes it seamless. Familiarity is your superpower, not a limitation.",
+    traits:["Well-rounded","Everyone's go-to","Versatile","Team favorite","Makes it look easy"]
   }
 };
 
