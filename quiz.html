@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTO — Which Assay Are You?</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --bg:#0d1b2a; --bg2:#1b2f4a; --teal:#4ecdc4; --gray:#8ab4d4; }
+body {
+  background:linear-gradient(135deg,var(--bg) 0%,var(--bg2) 100%);
+  font-family:'Segoe UI',sans-serif; color:#fff;
+  min-height:100vh; display:flex; flex-direction:column; align-items:center;
+  padding:28px 16px 60px;
+}
+.topbar { width:100%; max-width:560px; display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
+.brand { display:flex; align-items:center; gap:8px; }
+.dot { width:7px; height:7px; background:var(--teal); border-radius:50%; }
+.tl { color:var(--teal); font-size:.72rem; font-weight:700; letter-spacing:3px; text-transform:uppercase; }
+.btn-sm { padding:8px 18px; border-radius:18px; border:2px solid var(--teal); background:transparent; color:var(--teal); cursor:pointer; font-weight:700; font-size:.8rem; text-decoration:none; transition:background .15s; }
+.btn-sm:hover { background:rgba(78,205,196,.12); }
+
+.wrap { width:100%; max-width:520px; }
+
+/* SCREENS */
+.screen { display:none; }
+.screen.active { display:flex; flex-direction:column; align-items:center; animation:fadein .4s ease both; }
+@keyframes fadein { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── INTRO ── */
+.intro-scene {
+  font-size:5.5rem; text-align:center; margin-bottom:18px;
+  filter:drop-shadow(0 0 24px rgba(78,205,196,.3));
+  animation:float 3s ease-in-out infinite;
+}
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+.intro h1 {
+  font-size:2.2rem; font-weight:900; line-height:1.2; text-align:center; margin-bottom:10px;
+  background:linear-gradient(135deg,#fff 0%,var(--teal) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.intro-sub { color:var(--gray); font-size:.92rem; line-height:1.7; text-align:center; max-width:400px; margin-bottom:28px; }
+.assay-pills { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-bottom:32px; }
+.pill {
+  padding:5px 14px; border-radius:20px; font-size:.72rem; font-weight:700;
+  border:1px solid; letter-spacing:.5px;
+}
+.btn-start {
+  padding:15px 48px; border-radius:40px; background:var(--teal);
+  color:var(--bg); font-weight:800; font-size:1.05rem; cursor:pointer;
+  border:none; transition:transform .15s,box-shadow .2s;
+  box-shadow:0 0 28px rgba(78,205,196,.4);
+}
+.btn-start:hover { transform:translateY(-3px); box-shadow:0 8px 36px rgba(78,205,196,.5); }
+
+/* ── QUIZ ── */
+.prog-dots { display:flex; gap:7px; justify-content:center; margin-bottom:24px; }
+.pdot {
+  width:8px; height:8px; border-radius:50%;
+  background:rgba(78,205,196,.2); border:1px solid rgba(78,205,196,.3);
+  transition:background .3s, transform .3s;
+}
+.pdot.done { background:var(--teal); transform:scale(1.15); }
+.pdot.current { background:rgba(78,205,196,.5); transform:scale(1.25); border-color:var(--teal); }
+
+.q-scene {
+  font-size:5rem; text-align:center; margin-bottom:16px;
+  filter:drop-shadow(0 0 18px rgba(78,205,196,.25));
+}
+.q-text {
+  font-size:1.15rem; font-weight:700; line-height:1.5; text-align:center;
+  max-width:420px; margin-bottom:26px; color:#fff;
+}
+.options { display:flex; flex-direction:column; gap:12px; width:100%; }
+.opt {
+  width:100%; padding:16px 22px; border-radius:40px;
+  border:2px solid rgba(78,205,196,.2); background:rgba(255,255,255,.04);
+  cursor:pointer; font-size:.92rem; font-weight:600; color:#fff;
+  transition:border-color .18s, background .18s, transform .12s;
+  text-align:center; display:flex; align-items:center; gap:12px;
+}
+.opt-icon { font-size:1.3rem; flex-shrink:0; }
+.opt:hover { border-color:var(--teal); background:rgba(78,205,196,.1); transform:scale(1.02); }
+.opt.chosen { border-color:var(--teal); background:rgba(78,205,196,.18); pointer-events:none; }
+
+/* ── PROCESSING ── */
+.proc-scene { font-size:5rem; text-align:center; margin-bottom:20px; animation:spin-slow 3s linear infinite; }
+@keyframes spin-slow { to { transform:rotate(360deg); } }
+.proc-h { font-size:1.4rem; font-weight:800; text-align:center; margin-bottom:10px; }
+.proc-sub { color:var(--gray); font-size:.88rem; text-align:center; line-height:1.7; }
+.proc-bar { width:200px; height:4px; background:rgba(78,205,196,.15); border-radius:4px; margin:24px auto 0; overflow:hidden; }
+.proc-fill { height:100%; background:var(--teal); border-radius:4px; animation:load 1.6s ease forwards; }
+@keyframes load { from{width:0} to{width:100%} }
+
+/* ── RESULT ── */
+.result-card {
+  width:100%; border-radius:24px; padding:36px 28px;
+  border:2px solid; text-align:center;
+  position:relative; overflow:hidden;
+}
+.result-card::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.07) 0%, transparent 70%);
+  pointer-events:none;
+}
+.r-badge { font-size:.7rem; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; opacity:.6; margin-bottom:8px; }
+.r-scene { font-size:4.5rem; margin:10px 0 16px; filter:drop-shadow(0 0 20px currentColor); }
+.r-arch { font-size:.8rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
+.r-name { font-size:2rem; font-weight:900; margin-bottom:8px; }
+.r-tag { font-size:.95rem; font-weight:700; margin-bottom:18px; opacity:.9; }
+.r-divider { width:48px; height:2px; border-radius:2px; margin:0 auto 18px; opacity:.4; }
+.r-desc { font-size:.87rem; line-height:1.8; color:rgba(255,255,255,.82); margin-bottom:22px; }
+.traits { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+.trait {
+  padding:5px 13px; border-radius:20px; font-size:.7rem; font-weight:700;
+  background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.15);
+}
+
+.result-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:22px; width:100%; }
+.btn-primary { padding:13px 28px; border-radius:40px; background:var(--teal); color:var(--bg); font-weight:800; font-size:.9rem; text-decoration:none; border:none; cursor:pointer; transition:transform .15s; }
+.btn-primary:hover { transform:scale(1.04); }
+.btn-ghost { padding:11px 20px; border-radius:18px; border:2px solid rgba(255,255,255,.18); background:transparent; color:rgba(255,255,255,.65); font-weight:700; font-size:.82rem; cursor:pointer; text-decoration:none; transition:border-color .15s,color .15s; }
+.btn-ghost:hover { border-color:var(--teal); color:var(--teal); }
+
+.share-hint { font-size:.75rem; color:var(--gray); text-align:center; margin-top:12px; cursor:pointer; }
+.share-hint:hover { color:var(--teal); text-decoration:underline; }
+
+.toast {
+  position:fixed; bottom:28px; left:50%; transform:translateX(-50%);
+  background:var(--teal); color:var(--bg); padding:10px 24px; border-radius:20px;
+  font-weight:700; font-size:.82rem; opacity:0; transition:opacity .2s; pointer-events:none; z-index:99;
+}
+.toast.show { opacity:1; }
+
+@media(max-width:480px){
+  .intro h1 { font-size:1.8rem; }
+  .q-text { font-size:1rem; }
+  .opt { font-size:.85rem; padding:14px 18px; }
+  .result-card { padding:24px 18px; }
+  .r-name { font-size:1.7rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><div class="dot"></div><div class="tl">BTO — Lab Training</div></div>
+  <a href="index.html" class="btn-sm">← Home</a>
+</div>
+
+<div class="wrap">
+
+  <!-- INTRO -->
+  <div id="s-intro" class="screen active">
+    <div class="intro-scene">🧬</div>
+    <h1 class="intro h1">Which Assay<br>Are You?</h1>
+    <p class="intro-sub">8 questions about your lab personality. Find out which Post Library Prep assay matches your energy.</p>
+    <div class="assay-pills">
+      <div class="pill" style="color:#4a9eff;border-color:#4a9eff66;background:#4a9eff11;">sgNIPT / sgV2</div>
+      <div class="pill" style="color:#f5a623;border-color:#f5a62366;background:#f5a62311;">sgPLUS</div>
+      <div class="pill" style="color:#2ecc71;border-color:#2ecc7166;background:#2ecc7111;">SMA</div>
+      <div class="pill" style="color:#b07aff;border-color:#b07aff66;background:#b07aff11;">ANP / APA</div>
+    </div>
+    <button class="btn-start" onclick="startQuiz()">Find Out →</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="s-quiz" class="screen">
+    <div class="prog-dots" id="prog-dots"></div>
+    <div class="q-scene" id="q-scene"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="options" id="q-opts"></div>
+  </div>
+
+  <!-- PROCESSING -->
+  <div id="s-proc" class="screen">
+    <div class="proc-scene">⚗️</div>
+    <div class="proc-h">Sequencing your results...</div>
+    <div class="proc-sub">Running your personality through the pipeline.<br>Please stand by.</div>
+    <div class="proc-bar"><div class="proc-fill"></div></div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="s-result" class="screen">
+    <div class="result-card" id="result-card">
+      <div class="r-badge" id="r-sop"></div>
+      <div class="r-scene" id="r-scene"></div>
+      <div class="r-arch" id="r-arch"></div>
+      <div class="r-name" id="r-name"></div>
+      <div class="r-tag" id="r-tag"></div>
+      <div class="r-divider" id="r-div"></div>
+      <div class="r-desc" id="r-desc"></div>
+      <div class="traits" id="r-traits"></div>
+    </div>
+    <div class="result-actions">
+      <button class="btn-primary" onclick="retake()">↩ Retake</button>
+      <a href="game.html" class="btn-primary">▶ Play the Game</a>
+      <a href="leaderboard.html" class="btn-ghost">🏆 Leaderboard</a>
+    </div>
+    <div class="share-hint" onclick="copyResult()">📋 Copy your result to share with the team</div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">Copied to clipboard! 🧬</div>
+
+<script>
+const QUESTIONS = [
+  {
+    scene: "⏰",
+    q: "It's 6 AM. Your shift just started. First move?",
+    opts: [
+      { icon:"📋", text:"Check the run list — know exactly what's happening today.", a:"A" },
+      { icon:"🔍", text:"Scan the whole lab — get ahead of anything before it starts.", a:"B" },
+      { icon:"📌", text:"Pull up the SOP and nail the one critical thing first.", a:"C" },
+      { icon:"🧩", text:"Think through how today connects to yesterday's results.", a:"D" }
+    ]
+  },
+  {
+    scene: "🤔",
+    q: "Your coworker says "good enough." You think:",
+    opts: [
+      { icon:"✅", text:"If it meets spec, we're good. Move on.", a:"A" },
+      { icon:"➕", text:"But what if we just added one more check...", a:"B" },
+      { icon:"↩️", text:"Nope. I'm redoing that step.", a:"C" },
+      { icon:"⚖️", text:"Depends — good enough compared to what exactly?", a:"D" }
+    ]
+  },
+  {
+    scene: "🔬",
+    q: "Your lab bench on a normal day looks like:",
+    opts: [
+      { icon:"📦", text:"Organized. Everything in its usual, reliable spot.", a:"A" },
+      { icon:"🗂️", text:"Organized, plus a backup kit and extras just in case.", a:"B" },
+      { icon:"⬜", text:"Minimalist. Only exactly what I need for this step.", a:"C" },
+      { icon:"🗺️", text:"Layered — I work in stages and need room for all of them.", a:"D" }
+    ]
+  },
+  {
+    scene: "📄",
+    q: "A brand new protocol lands on your desk. You:",
+    opts: [
+      { icon:"▶️", text:"Read it once and start — I learn best by doing.", a:"A" },
+      { icon:"📚", text:"Read it, then look up everything adjacent to it too.", a:"B" },
+      { icon:"🖊️", text:"Read it three times and highlight every critical step.", a:"C" },
+      { icon:"🕸️", text:"Map out how each step connects before touching a pipette.", a:"D" }
+    ]
+  },
+  {
+    scene: "👥",
+    q: "In a group project, you're usually:",
+    opts: [
+      { icon:"🚦", text:"The one keeping everyone on track and moving.", a:"A" },
+      { icon:"💡", text:"The one with ten ideas before the meeting even starts.", a:"B" },
+      { icon:"🏆", text:"The one who quietly delivers the highest-quality work.", a:"C" },
+      { icon:"🔗", text:"The one who sees how all the pieces connect.", a:"D" }
+    ]
+  },
+  {
+    scene: "✨",
+    q: "Pick the word that fits your work style best:",
+    opts: [
+      { icon:"🪨", text:"Reliable — steady, consistent, always there.", a:"A" },
+      { icon:"🚀", text:"Extra — more effort, more coverage, more everything.", a:"B" },
+      { icon:"🎯", text:"Precise — one target, total mastery.", a:"C" },
+      { icon:"🌊", text:"Layered — complex by design, worth the depth.", a:"D" }
+    ]
+  },
+  {
+    scene: "🚨",
+    q: "Something goes wrong mid-run. You:",
+    opts: [
+      { icon:"📝", text:"Stay calm, flag it, and follow the deviation procedure.", a:"A" },
+      { icon:"🛡️", text:"Troubleshoot it AND build a new checklist so it never happens again.", a:"B" },
+      { icon:"🔁", text:"Go back to the exact step where it broke and redo it cleanly.", a:"C" },
+      { icon:"🕵️", text:"Trace through every prior step before touching anything.", a:"D" }
+    ]
+  },
+  {
+    scene: "🐾",
+    q: "Choose your spirit animal:",
+    opts: [
+      { icon:"🐕", text:"Golden retriever — dependable, always shows up, everyone loves them.", a:"A" },
+      { icon:"🐩", text:"Border collie — working twice as hard as everyone else, always.", a:"B" },
+      { icon:"🦅", text:"Hawk — laser focus, doesn't miss a thing, precise strike.", a:"C" },
+      { icon:"🐙", text:"Octopus — multitasking at a level others can't quite comprehend.", a:"D" }
+    ]
+  }
+];
+
+const RESULTS = {
+  A: {
+    sop:"LAB-SOP-640", archetype:"The Backbone", name:"sgNIPT / sgV2",
+    tag:"The assay everyone counts on.",
+    scene:"🧱", color:"#4a9eff", border:"rgba(74,158,255,.5)", bg:"rgba(74,158,255,.07)",
+    desc:"You're the foundation of the lab. Steady, dependable, and always ready — you're the person your team leans on when things need to run smoothly. You don't need the spotlight. You just need the run to go well, and it does, because you made it that way. Like sgNIPT, you cover the essentials with consistency and confidence.",
+    traits:["Steady under pressure","Team anchor","Protocol-first","Always reliable","Gets it done"]
+  },
+  B: {
+    sop:"LAB-SOP-651", archetype:"The Overachiever", name:"sgPLUS",
+    tag:"Why do less when you can do more?",
+    scene:"🚀", color:"#f5a623", border:"rgba(245,166,35,.5)", bg:"rgba(245,166,35,.07)",
+    desc:"More analytes. More panels. More everything. You don't just meet the bar — you raise it, then wonder if there's another bar above that. Like sgPLUS, you go above and beyond by design, and somehow you make it look effortless. Your thoroughness catches things others miss, and your energy lifts the whole team.",
+    traits:["Always adds a QC step","First to volunteer","Reads ahead","Extra mile default","Creative solver"]
+  },
+  C: {
+    sop:"LAB-SOP-645", archetype:"The Specialist", name:"SMA",
+    tag:"One target. Total mastery.",
+    scene:"🎯", color:"#2ecc71", border:"rgba(46,204,113,.5)", bg:"rgba(46,204,113,.07)",
+    desc:"You pick your lane and own it completely. While others juggle, you go deep — and deep is where the important work lives. Like the SMA assay, your precision and focus make you invaluable. You're the person everyone wants to check their critical steps, because you will find anything that's off.",
+    traits:["Pinpoint accuracy","Methodical","Never cuts corners","Detail-obsessed","Calm and focused"]
+  },
+  D: {
+    sop:"LAB-SOP-623", archetype:"The Big Picture Thinker", name:"ANP / APA",
+    tag:"You handle complexity others avoid.",
+    scene:"🐙", color:"#b07aff", border:"rgba(176,122,255,.5)", bg:"rgba(176,122,255,.07)",
+    desc:"You see connections others don't. Before anyone picks up a pipette, you've already mapped three possible outcomes and what each means downstream. Like ANP/APA, you operate in layers — and that complexity is your strength, not a complication. You thrive when the problem is hard enough to be interesting.",
+    traits:["Systems thinker","Connects the dots","Multi-step planner","Loves complexity","Strategic mind"]
+  }
+};
+
+let scores = {A:0,B:0,C:0,D:0};
+let current = 0;
+let lastResult = null;
+
+function startQuiz() {
+  scores = {A:0,B:0,C:0,D:0};
+  current = 0;
+  buildDots();
+  show('s-quiz');
+  renderQ();
+}
+
+function buildDots() {
+  const d = document.getElementById('prog-dots');
+  d.innerHTML = QUESTIONS.map((_,i) => `<div class="pdot" id="pd${i}"></div>`).join('');
+}
+
+function updateDots() {
+  QUESTIONS.forEach((_,i) => {
+    const el = document.getElementById('pd'+i);
+    if (!el) return;
+    el.className = 'pdot' + (i < current ? ' done' : i===current ? ' current' : '');
+  });
+}
+
+function renderQ() {
+  updateDots();
+  const q = QUESTIONS[current];
+
+  const scene = document.getElementById('q-scene');
+  const text  = document.getElementById('q-text');
+  const opts  = document.getElementById('q-opts');
+
+  scene.style.opacity = '0'; text.style.opacity = '0'; opts.style.opacity = '0';
+  scene.textContent = q.scene;
+  text.textContent  = q.q;
+
+  // Shuffle options
+  const shuffled = [...q.opts].sort(() => Math.random() - 0.5);
+  opts.innerHTML = shuffled.map(o => `
+    <button class="opt" onclick="pick('${o.a}',this)">
+      <span class="opt-icon">${o.icon}</span>
+      <span>${o.text}</span>
+    </button>`).join('');
+
+  requestAnimationFrame(() => {
+    scene.style.transition = 'opacity .3s'; text.style.transition = 'opacity .3s'; opts.style.transition = 'opacity .35s';
+    scene.style.opacity = '1'; text.style.opacity = '1'; opts.style.opacity = '1';
+  });
+}
+
+function pick(answer, btn) {
+  document.querySelectorAll('.opt').forEach(b => { b.style.pointerEvents='none'; });
+  btn.classList.add('chosen');
+  scores[answer]++;
+  setTimeout(() => {
+    current++;
+    if (current < QUESTIONS.length) {
+      renderQ();
+    } else {
+      showProcessing();
+    }
+  }, 400);
+}
+
+function showProcessing() {
+  show('s-proc');
+  // Reset the proc bar animation
+  const fill = document.querySelector('.proc-fill');
+  fill.style.animation = 'none';
+  fill.offsetHeight; // reflow
+  fill.style.animation = 'load 1.6s ease forwards';
+  setTimeout(showResult, 2000);
+}
+
+function showResult() {
+  const winner = Object.keys(scores).reduce((a,b) => scores[a]>=scores[b]?a:b);
+  const r = RESULTS[winner];
+  lastResult = r;
+
+  document.getElementById('result-card').style.background  = r.bg;
+  document.getElementById('result-card').style.borderColor = r.border;
+  document.getElementById('r-sop').textContent   = r.sop;
+  document.getElementById('r-scene').textContent = r.scene;
+  document.getElementById('r-scene').style.color = r.color;
+  document.getElementById('r-arch').textContent  = r.archetype;
+  document.getElementById('r-arch').style.color  = r.color;
+  document.getElementById('r-name').textContent  = r.name;
+  document.getElementById('r-tag').textContent   = r.tag;
+  document.getElementById('r-tag').style.color   = r.color;
+  document.getElementById('r-div').style.background = r.color;
+  document.getElementById('r-desc').textContent  = r.desc;
+  document.getElementById('r-traits').innerHTML  = r.traits.map(t=>`<div class="trait">${t}</div>`).join('');
+
+  show('s-result');
+}
+
+function copyResult() {
+  if (!lastResult) return;
+  const r = lastResult;
+  const txt = `I took the BTO Lab Training personality quiz!\n\nI'm ${r.name} — "${r.archetype}"\n${r.tag}\n\nFind out which assay you are 👇\nhttps://cgatchalian-code.github.io/lab-training-game/quiz.html`;
+  navigator.clipboard.writeText(txt).then(() => {
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2400);
+  });
+}
+
+function retake() {
+  scores = {A:0,B:0,C:0,D:0};
+  current = 0;
+  show('s-intro');
+}
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+</script>
+</body>
+</html>
