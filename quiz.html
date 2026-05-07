@@ -34,7 +34,7 @@ body {
   animation:float 3s ease-in-out infinite;
 }
 @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-.intro h1 {
+.quiz-title {
   font-size:2.2rem; font-weight:900; line-height:1.2; text-align:center; margin-bottom:10px;
   background:linear-gradient(135deg,#fff 0%,var(--teal) 100%);
   -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
@@ -153,7 +153,7 @@ body {
   <!-- INTRO -->
   <div id="s-intro" class="screen active">
     <div class="intro-scene">🧬</div>
-    <h1 class="intro h1">Which Assay<br>Are You?</h1>
+    <h1 class="quiz-title">Which Assay<br>Are You?</h1>
     <p class="intro-sub">8 questions about your lab personality. Find out which Post Library Prep assay matches your energy.</p>
     <div class="assay-pills">
       <div class="pill" style="color:#4a9eff;border-color:#4a9eff66;background:#4a9eff11;">sgNIPT / sgV2</div>
@@ -218,7 +218,7 @@ const QUESTIONS = [
   },
   {
     scene: "🤔",
-    q: "Your coworker says "good enough." You think:",
+    q: 'Your coworker says "good enough." You think:',
     opts: [
       { icon:"✅", text:"If it meets spec, we're good. Move on.", a:"A" },
       { icon:"➕", text:"But what if we just added one more check...", a:"B" },
